@@ -1,0 +1,43 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="concerto-content.html">
+
+<!--
+The `concerto-graphic` elements provides a large static image.
+
+@element concerto-content
+@status alpha
+-->
+<polymer-element name="concerto-graphic" attributes="path" extends="concerto-content">
+  <template>
+    <img id="graphic" src="{{path}}" />
+  </template>
+
+  <script>
+    Polymer('concerto-graphic', {
+      /**
+       * Path to the image to render.
+       *
+       * @attribute path
+       * @type String
+       * @default ''
+       */
+       path: '',
+
+       /**
+        * Do not use the default `domReady` detection for when the content is
+        * ready.
+        */
+       domReady: function() {},
+
+       /**
+        * Listen to the `load` event of the image being displayed to determine
+        * when to call `loaded`.
+        */
+       ready: function() {
+         this.$.graphic.addEventListener('load', function() {
+           this.loaded()
+         }.bind(this));
+       },
+    });
+  </script>
+</polymer-element>

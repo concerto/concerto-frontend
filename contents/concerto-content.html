@@ -45,8 +45,11 @@ building specific Concerto content elements.
       },
 
       /**
-       * Fire an event to indicate this content has finished loaded and can be
-       * displayed in the field.
+       * Indicate that this content has finished loaded and can be displayed
+       * in the field.
+       *
+       * Currently this involves firing the `load` event, but the details may
+       * change.
        */
       loaded: function() {
         this.fire('load');

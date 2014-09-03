@@ -6,6 +6,7 @@
 
   <script src="../platform/platform.js"></script>
   <link rel="import" href="contents/concerto-ticker.html">
+  <link rel="import" href="contents/concerto-graphic.html">
 </head>
 
 <body unresolved>
@@ -14,8 +15,12 @@
   <p>Loaded: <span id='ticker-loaded'>No</span></p>
   <concerto-ticker contentId="123" title="test title" data="This is the ticker content"></concerto-ticker>
 
+  <h2>Graphic</h2>
+  <p>Loaded: <span id='graphic-loaded'>No</span></p>
+  <concerto-graphic contentId="123" title="test title" path="http://www.polymer-project.org/images/logos/p-logo.svg"></concerto-ticker>
+
   <script>
-  var contents = ['ticker'];
+  var contents = ['ticker', 'graphic'];
   contents.forEach(function(elem){
     document.querySelector('concerto-' + elem).addEventListener('load', function(){
       document.getElementById(elem + '-loaded').innerHTML = 'Yes';
