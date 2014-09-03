@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Concerto Frontend Demo</title>
+
+  <script src="../platform/platform.js"></script>
+  <link rel="import" href="contents/concerto-ticker.html">
+</head>
+
+<body unresolved>
+  <h1>Contents</h1>
+  <h2>Ticker</h2>
+  <p>Loaded: <span id='ticker-loaded'>No</span></p>
+  <concerto-ticker contentId="123" title="test title" data="This is the ticker content"></concerto-ticker>
+
+  <script>
+  var contents = ['ticker'];
+  contents.forEach(function(elem){
+    document.querySelector('concerto-' + elem).addEventListener('load', function(){
+      document.getElementById(elem + '-loaded').innerHTML = 'Yes';
+    });
+  });
+</script>
+</body>
+</html>

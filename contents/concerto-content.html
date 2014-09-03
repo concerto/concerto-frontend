@@ -1,0 +1,56 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<!--
+The `concerto-content` elements provides a base element to be extended when
+building specific Concerto content elements.
+
+@element concerto-content
+@status alpha
+-->
+<polymer-element name="concerto-content" attributes="contentId title">
+  <template></template>
+
+  <script>
+    Polymer('concerto-content', {
+      /**
+       * The `load` event is fired when the content is loaded and ready to be
+       * displayed.  By default this happens in `domReady`.
+       *
+       * @event load
+       */
+
+      /**
+       * Backend ID of the content.
+       *
+       * @attribute contentId
+       * @type Number
+       * @default 0
+       */
+       contentId: 0,
+
+      /**
+       * Title of the content.
+       *
+       * @attribute title
+       * @type String
+       * @default ''
+       */
+       title: '',
+
+      /**
+       * When the dom is ready, call `loaded` to say everything has loaded.
+       */
+      domReady: function() {
+        this.loaded();
+      },
+
+      /**
+       * Fire an event to indicate this content has finished loaded and can be
+       * displayed in the field.
+       */
+      loaded: function() {
+        this.fire('load');
+      },
+    });
+  </script>
+</polymer-element>

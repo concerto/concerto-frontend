@@ -1,0 +1,30 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="concerto-content.html">
+
+<!--
+The `concerto-ticker` elements provides a static div displaying plaintext.
+
+This element currently does not implement the marquee or scaling features of the
+production Ticker implementation.
+
+@element concerto-content
+@status alpha
+-->
+<polymer-element name="concerto-ticker" attributes="data" extends="concerto-content">
+  <template>
+    <div class="ticker">{{data}}</div>
+  </template>
+
+  <script>
+    Polymer('concerto-ticker', {
+      /**
+       * Text that goes in the ticker.
+       *
+       * @attribute data
+       * @type String
+       * @default ''
+       */
+       data: '',
+    });
+  </script>
+</polymer-element>

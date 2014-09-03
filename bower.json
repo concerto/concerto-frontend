@@ -1,0 +1,8 @@
+{
+  "name": "concerto_frontend",
+  "version": "0.0.0",
+  "private": false,
+  "dependencies": {
+    "polymer": "Polymer/polymer#master"
+  }
+}
