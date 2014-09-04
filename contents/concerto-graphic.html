@@ -7,7 +7,7 @@ The `concerto-graphic` elements provides a large static image.
 @element concerto-content
 @status alpha
 -->
-<polymer-element name="concerto-graphic" attributes="path" extends="concerto-content">
+<polymer-element name="concerto-graphic" attributes="path" constructor="ConcertoGraphic" extends="concerto-content">
   <template>
     <img id="graphic" src="{{path}}" />
   </template>

@@ -10,7 +10,7 @@ production Ticker implementation.
 @element concerto-content
 @status alpha
 -->
-<polymer-element name="concerto-ticker" attributes="data" extends="concerto-content">
+<polymer-element name="concerto-ticker" attributes="data" constructor="ConcertoTicker" extends="concerto-content">
   <template>
     <div class="ticker">{{data}}</div>
   </template>
