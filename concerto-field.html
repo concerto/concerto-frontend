@@ -1,0 +1,84 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../core-ajax/core-ajax.html">
+
+<!--
+The `concerto-content` elements provides a base element to be extended when
+building specific Concerto content elements.
+
+@element concerto-content
+@status alpha
+-->
+<polymer-element name="concerto-field" attributes="screenId fieldId">
+  <template>
+    <core-ajax id="contentsData"
+      url="http://localhost:3000/frontend/{{screenId}}/fields/{{fieldId}}/contents.json"
+      handleAs="json"
+      on-core-response="{{handleContentsData}}"></core-ajax>
+    <div id="content"></div>
+  </template>
+
+  <script>
+    Polymer({
+      /**
+       * Backend ID of the screen.
+       *
+       * @attribute screenId
+       * @type Number
+       * @default 0
+       */
+      screenId: 0,
+
+      /**
+       * Backend ID of the field.
+       *
+       * @attribute fieldId
+       * @type Number
+       * @default 0
+       */
+      fieldId: 0,
+
+      /**
+       * Content currently being shown in the field
+       *
+       * @attribute currentContent
+       */
+      currentContent: undefined,
+
+      domReady: function(){
+        this.requestContent();
+      },
+
+      requestContent: function() {
+        console.log('Refreshing content.');
+        this.$.contentsData.go();
+      },
+
+      handleContentsData: function(event, response) {
+        var data = response.response[0];
+        var contentData = {
+          title: data.name,
+          contentId: data.id,
+        };
+
+        //Flatten render_details
+        Object.keys(data.render_details).forEach(function(key) {
+          contentData[key] = data.render_details[key];
+        });
+
+        var contentType = data.type.toLowerCase();
+        var content = concerto.contentFactory.getType(contentType);
+        content.fromJSON(contentData);
+        if (!this.currentContent) {
+          this.$.content.appendChild(content);
+        } else {
+          this.$.content.replaceChild(content, this.currentContent);
+        }
+        this.currentContent = content;
+
+        this.job('updateField' + this.fieldId, function() {
+          this.requestContent();
+        }, data.duration * 100);
+      },
+    });
+  </script>
+</polymer-element>
