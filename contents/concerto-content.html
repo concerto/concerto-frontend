@@ -54,6 +54,18 @@ building specific Concerto content elements.
       loaded: function() {
         this.fire('load');
       },
+
+      /**
+       * Load the values from a JSON Map which map to attributes
+       * of this element.
+       */
+      fromJSON: function(data) {
+        Object.keys(data).forEach(function(key) {
+          if (key in this) {
+            this.setAttribute(key, data[key]);
+          }
+        }.bind(this));
+      },
     });
   </script>
 </polymer-element>
