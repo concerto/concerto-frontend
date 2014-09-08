@@ -7,7 +7,7 @@ building specific Concerto content elements.
 @element concerto-content
 @status alpha
 -->
-<polymer-element name="concerto-content" attributes="contentId title">
+<polymer-element name="concerto-content" attributes="contentId title duration autoLoad">
   <template></template>
 
   <script>
@@ -38,10 +38,31 @@ building specific Concerto content elements.
        title: '',
 
       /**
+       * Duration the content should be displayed for, in seconds.
+       *
+       * @attribute duration
+       * @type Number
+       * @default 0
+       */
+       duration: 0,
+
+      /**
+       * Control if the `load` event is automatically fired or not when the
+       * `domReady` and `fromJSON` methods are called.
+       *
+       * @attribute autoLoad
+       * @type Boolean
+       * @default true
+       */
+       autoLoad: true,
+
+      /**
        * When the dom is ready, call `loaded` to say everything has loaded.
        */
       domReady: function() {
-        this.loaded();
+        if (this.autoLoad) {
+          this.loaded();
+        }
       },
 
       /**
@@ -52,7 +73,7 @@ building specific Concerto content elements.
        * change.
        */
       loaded: function() {
-        this.fire('load');
+        this.fire('load', this);
       },
 
       /**
@@ -65,6 +86,9 @@ building specific Concerto content elements.
             this.setAttribute(key, data[key]);
           }
         }.bind(this));
+        if (this.autoLoad) {
+          this.loaded();
+        }
       },
     });
   </script>

@@ -7,7 +7,7 @@ The `concerto-graphic` elements provides a large static image.
 @element concerto-content
 @status alpha
 -->
-<polymer-element name="concerto-graphic" attributes="path" constructor="ConcertoGraphic" extends="concerto-content">
+<polymer-element name="concerto-graphic" attributes="path" constructor="ConcertoGraphic" extends="concerto-content" autoLoad="false">
   <template>
     <img id="graphic" src="{{path}}" />
   </template>
@@ -22,12 +22,6 @@ The `concerto-graphic` elements provides a large static image.
        * @default ''
        */
        path: '',
-
-       /**
-        * Do not use the default `domReady` detection for when the content is
-        * ready.
-        */
-       domReady: function() {},
 
        /**
         * Listen to the `load` event of the image being displayed to determine
