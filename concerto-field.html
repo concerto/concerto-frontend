@@ -10,6 +10,11 @@ fetching and displaying content elements.
 -->
 <polymer-element name="concerto-field" attributes="screenId fieldId">
   <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
     <core-ajax id="contentsData"
       url="http://localhost:3000/frontend/{{screenId}}/fields/{{fieldId}}/contents.json"
       handleAs="json"
@@ -54,7 +59,12 @@ fetching and displaying content elements.
       },
 
       handleContentsData: function(event, response) {
+        // TODO(bamnet): Handle multiple contents being returned.
         var data = response.response[0];
+        // TODO(bamnet): Improve handling of errors.
+        if (!data) {
+          return;
+        }
         var contentData = {
           title: data.name,
           contentId: data.id,
