@@ -7,7 +7,7 @@ building specific Concerto content elements.
 @element concerto-content
 @status alpha
 -->
-<polymer-element name="concerto-content" attributes="contentId title duration autoLoad">
+<polymer-element name="concerto-content" attributes="contentId title duration autoLoad baseURL">
   <template></template>
 
   <script>
@@ -55,6 +55,15 @@ building specific Concerto content elements.
        * @default true
        */
        autoLoad: true,
+
+      /**
+       * Base path to prepend to all URLs.
+       *
+       * @attribute baseURK
+       * @type String
+       * @default ''
+       */
+      baseURL: '',
 
       /**
        * When the dom is ready, call `loaded` to say everything has loaded.

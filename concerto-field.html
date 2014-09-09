@@ -8,7 +8,7 @@ fetching and displaying content elements.
 @element concerto-field
 @status alpha
 -->
-<polymer-element name="concerto-field" attributes="screenId fieldId">
+<polymer-element name="concerto-field" attributes="screenId fieldId baseURL">
   <template>
     <style>
       :host {
@@ -16,7 +16,7 @@ fetching and displaying content elements.
       }
     </style>
     <core-ajax id="contentsData"
-      url="http://localhost:3000/frontend/{{screenId}}/fields/{{fieldId}}/contents.json"
+      url="{{baseURL}}/frontend/{{screenId}}/fields/{{fieldId}}/contents.json"
       handleAs="json"
       on-core-response="{{handleContentsData}}"></core-ajax>
     <div id="content"></div>
@@ -41,6 +41,15 @@ fetching and displaying content elements.
        * @default 0
        */
       fieldId: 0,
+
+      /**
+       * Base path to prepend to all URLs.
+       *
+       * @attribute baseURK
+       * @type String
+       * @default ''
+       */
+      baseURL: '',
 
       /**
        * Content currently being shown in the field
@@ -83,6 +92,7 @@ fetching and displaying content elements.
           this.scheduleUpdate(10 * 1000);  // Try again in 10 seconds.
           return;
         }
+        content.baseURL = this.baseURL;
         // Setup the listeners before loading the data.
         content.addEventListener('load', this.handleContentLoaded.bind(this));
         content.fromJSON(contentData);

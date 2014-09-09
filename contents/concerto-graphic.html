@@ -1,5 +1,6 @@
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="concerto-content.html">
+<script src="../utils.js"></script>
 
 <!--
 The `concerto-graphic` elements provides a large static image.
@@ -9,7 +10,7 @@ The `concerto-graphic` elements provides a large static image.
 -->
 <polymer-element name="concerto-graphic" attributes="path" constructor="ConcertoGraphic" extends="concerto-content" autoLoad="false">
   <template>
-    <img id="graphic" src="{{path}}" />
+    <img id="graphic" src="{{path | resolveURL(baseURL)}}" />
   </template>
 
   <script>
