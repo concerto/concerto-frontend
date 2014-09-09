@@ -13,6 +13,13 @@ fetching and displaying content elements.
     <style>
       :host {
         display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      #content {
+        width: 100%;
+        height: 100%;
       }
     </style>
     <core-ajax id="contentsData"
@@ -108,7 +115,7 @@ fetching and displaying content elements.
         }
         this.currentContent = content;
         // TODO(bamnet): Swap this 100 with 1000 to get realtime.
-        this.scheduleUpdate(content.duration * 100);
+        this.scheduleUpdate(content.duration * 10000);
       },
 
       scheduleUpdate: function(msToWait) {
