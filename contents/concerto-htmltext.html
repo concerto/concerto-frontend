@@ -1,0 +1,41 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="concerto-content.html">
+
+<!--
+The `concerto-htmltext` elements provides a static div displaying HTML.
+
+@element concerto-content
+@status alpha
+-->
+<polymer-element name="concerto-htmltext" attributes="data" constructor="ConcertoHtmlText" extends="concerto-content">
+  <template>
+    <div id="htmltext" class="htmltext"></div>
+  </template>
+
+  <script>
+    Polymer({
+      /**
+       * HTML that goes in the div.
+       *
+       * @attribute data
+       * @type String
+       * @default ''
+       */
+       data: '',
+
+       /**
+        * Display the HTMLText data.
+        *
+        * We use a changed listener here and set via innerHTML to avoid double
+        * escaping the HTML text.  Polymer currently sanitizes all HTML but we
+        * already do that server-side.
+        */
+       dataChanged: function() {
+         this.$.htmltext.innerHTML = this.data;
+       },
+    });
+  </script>
+</polymer-element>
+<script>
+  registerContentType();
+</script>
