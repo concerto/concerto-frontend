@@ -12,7 +12,7 @@ production Ticker implementation.
 -->
 <polymer-element name="concerto-ticker" attributes="data" constructor="ConcertoTicker" extends="concerto-content">
   <template>
-    <div class="ticker">{{data}}</div>
+    <div id="ticker" class="ticker"></div>
   </template>
 
   <script>
@@ -25,6 +25,17 @@ production Ticker implementation.
        * @default ''
        */
        data: '',
+
+       /**
+        * Display the Ticker Text data.
+        *
+        * We use a changed listener here and set via innerHTML to avoid double
+        * escaping the HTML text.  Polymer currently sanitizes all HTML but we
+        * already do that server-side.
+        */
+       dataChanged: function() {
+         this.$.ticker.innerHTML = this.data;
+       },
     });
   </script>
 </polymer-element>
