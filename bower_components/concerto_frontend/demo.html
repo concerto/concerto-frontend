@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Concerto Frontend Demo</title>
+
+  <script src="../platform/platform.js"></script>
+  <script src="content-factory.js"></script>
+  <link rel="import" href="contents/concerto-ticker.html">
+  <link rel="import" href="contents/concerto-graphic.html">
+  <link rel="import" href="contents/concerto-htmltext.html">
+  <link rel="import" href="concerto-field.html">
+  <link rel="import" href="concerto-screen.html">
+</head>
+
+<body>
+  <h1>Screen</h1>
+  <concerto-screen screenId="1" style="width: 100%; height: 500px;" baseURL="http://localhost:3000"></concerto-screen>
+  <!--<h1>Fields</h1>
+  <concerto-field screenId="1" fieldId="2"></concerto-field>-->
+  <h1>Contents</h1>
+  <h2>Ticker</h2>
+  <p>Loaded: <span id='ticker-loaded'>No</span></p>
+  <concerto-ticker contentId="123" title="test title" data="This is the ticker content"></concerto-ticker>
+
+  <h2>Graphic</h2>
+  <p>Loaded: <span id='graphic-loaded'>No</span></p>
+  <concerto-graphic contentId="456" title="test title" path="http://www.polymer-project.org/images/logos/p-logo.svg"></concerto-ticker>
+
+  <script>
+  var contents = ['ticker', 'graphic'];
+  contents.forEach(function(elem){
+    document.querySelector('concerto-' + elem).addEventListener('load', function(){
+      document.getElementById(elem + '-loaded').innerHTML = 'Yes';
+    });
+  });
+</script>
+</body>
+</html>

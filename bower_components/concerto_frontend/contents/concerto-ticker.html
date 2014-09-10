@@ -1,0 +1,44 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="concerto-content.html">
+
+<!--
+The `concerto-ticker` elements provides a static div displaying plaintext.
+
+This element currently does not implement the marquee or scaling features of the
+production Ticker implementation.
+
+@element concerto-content
+@status alpha
+-->
+<polymer-element name="concerto-ticker" attributes="data" constructor="ConcertoTicker" extends="concerto-content">
+  <template>
+    <div id="ticker" class="ticker"></div>
+  </template>
+
+  <script>
+    Polymer({
+      /**
+       * Text that goes in the ticker.
+       *
+       * @attribute data
+       * @type String
+       * @default ''
+       */
+       data: '',
+
+       /**
+        * Display the Ticker Text data.
+        *
+        * We use a changed listener here and set via innerHTML to avoid double
+        * escaping the HTML text.  Polymer currently sanitizes all HTML but we
+        * already do that server-side.
+        */
+       dataChanged: function() {
+         this.$.ticker.innerHTML = this.data;
+       },
+    });
+  </script>
+</polymer-element>
+<script>
+  registerContentType();
+</script>

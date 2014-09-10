@@ -1,0 +1,81 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="concerto-content.html">
+<script src="../utils.js"></script>
+
+<!--
+The `concerto-graphic` elements provides a large static image.
+
+@element concerto-content
+@status alpha
+-->
+<polymer-element name="concerto-graphic" attributes="path" constructor="ConcertoGraphic" extends="concerto-content" autoLoad="false">
+  <template>
+    <style>
+      :host {
+        display: block;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+      }
+
+      .portrait {
+        width: 100%;
+      }
+
+      .landscape {
+        height: 100%;
+      }
+
+      img {
+        /** I do not understand this centering voodoo */
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+    </style>
+    <img id="graphic" src="{{path | resolveURL(baseURL)}}" />
+  </template>
+
+  <script>
+    Polymer({
+      /**
+       * Path to the image to render.
+       *
+       * @attribute path
+       * @type String
+       * @default ''
+       */
+      path: '',
+
+      /**
+       * Listen to the `load` event of the image being displayed to determine
+       * when to call `loaded`.
+       */
+      ready: function() {
+        this.$.graphic.addEventListener('load', function() {
+          this.loaded();
+          this.resize();
+        }.bind(this));
+      },
+
+      /**
+       * Resize the image to use portrait or landscape mode to fill the space.
+       */
+      resize: function() {
+        var containerRatio = this.offsetWidth / this.offsetHeight;
+        if (!containerRatio) {
+          // Maybe the container is broken or doesn't have a width;
+          return;
+        }
+
+        var imgRatio = this.$.graphic.naturalWidth / this.$.graphic.naturalHeight;
+
+        this.$.graphic.classList.toggle('portrait', (imgRatio >= containerRatio));
+        this.$.graphic.classList.toggle('landscape', (imgRatio <= containerRatio));
+       },
+    });
+  </script>
+</polymer-element>
+<script>
+  registerContentType();
+</script>

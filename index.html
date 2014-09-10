@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Concerto Frontend Demo</title>
+
+  <script src="bower_components/platform/platform.js"></script>
+  <script src="bower_components/concerto_frontend/content-factory.js"></script>
+  <link rel="import" href="bower_components/concerto_frontend/contents/concerto-ticker.html">
+  <link rel="import" href="bower_components/concerto_frontend/contents/concerto-graphic.html">
+  <link rel="import" href="bower_components/concerto_frontend/contents/concerto-htmltext.html">
+  <link rel="import" href="bower_components/concerto_frontend/concerto-field.html">
+  <link rel="import" href="bower_components/concerto_frontend/concerto-screen.html">
+  <style>
+    html, body, concerto-screen {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      border: 0;
+    }
+  </style>
+  <script>
+    function parseHash(){
+      var params = window.location.hash.substring(1).split('&');
+      var config = {};
+      if (params.length > 1) {
+        params.forEach(function(param){
+          var kv = param.split("=");
+          if (kv.length == 2) {
+            config[kv[0]] = kv[1];
+          }
+        });
+      }
+      var screen = document.querySelector('concerto-screen');
+      for(var attr in config) { 
+        if (config.hasOwnProperty(attr)) {
+          screen.setAttribute(attr, config[attr]);
+        }
+      }
+    }
+  window.addEventListener('hashchange', parseHash);
+  </script>
+</head>
+<body onload="parseHash();">
+  <concerto-screen></concerto-screen>
+</body>
+</html>

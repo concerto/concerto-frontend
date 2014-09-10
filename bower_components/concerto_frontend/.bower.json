@@ -1,0 +1,18 @@
+{
+  "name": "concerto_frontend",
+  "private": false,
+  "dependencies": {
+    "polymer": "Polymer/polymer#master",
+    "core-ajax": "Polymer/core-ajax#~0.4.0"
+  },
+  "homepage": "https://github.com/bamnet/concerto-frontend",
+  "_release": "3de7fcb2ce",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "3de7fcb2cee8fce2793fdde0a7a530aabba94156"
+  },
+  "_source": "https://github.com/bamnet/concerto-frontend.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/bamnet/concerto-frontend.git"
+}
