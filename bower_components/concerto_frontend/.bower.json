@@ -6,11 +6,11 @@
     "core-ajax": "Polymer/core-ajax#~0.4.0"
   },
   "homepage": "https://github.com/bamnet/concerto-frontend",
-  "_release": "3ce23e1f85",
+  "_release": "58cd5820cd",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "3ce23e1f85630c8633dacdb31a4a153df60c3c0a"
+    "commit": "58cd5820cd53340bb2cb84970d151882023af18c"
   },
   "_source": "https://github.com/bamnet/concerto-frontend.git",
   "_target": "*",
