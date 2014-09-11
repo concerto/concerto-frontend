@@ -2,6 +2,7 @@
 <link rel="import" href="../core-ajax/core-ajax.html">
 
 <link rel="import" href="concerto-field.html">
+<script src="utils.js"></script>
 
 <!--
 The `concerto-screen` element provides the main Concerto screen.
@@ -35,7 +36,7 @@ The `concerto-screen` element provides the main Concerto screen.
       on-core-response="{{handleScreenData}}">
     </core-ajax>
     <div id="template_{{template.id}}" class="template"
-      style="background-image: url('{{template.path}}');">
+      style="background-image: url('{{template.path | resolveURL(baseURL)}}');">
       <template repeat="{{position in template.positions}}">
         <div class="position" id="position_{{position.id}}"
           style="left: {{position.left * 100}}%;
