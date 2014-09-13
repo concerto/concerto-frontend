@@ -6,7 +6,7 @@
  */
 PolymerExpressions.prototype.resolveURL = function(url, base) {
   var r = new RegExp('^(?:[a-z]+:)?//', 'i');
-  if (!base || r.test(url)) {
+  if (!url || !base || r.test(url)) {
     return url;
   }
   return base + url;
