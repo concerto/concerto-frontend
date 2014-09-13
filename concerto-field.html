@@ -8,7 +8,7 @@ fetching and displaying content elements.
 @element concerto-field
 @status alpha
 -->
-<polymer-element name="concerto-field" attributes="screenId fieldId baseURL">
+<polymer-element name="concerto-field" attributes="screenId fieldId baseURL contentStyle">
   <template>
     <style>
       :host {
@@ -59,6 +59,15 @@ fetching and displaying content elements.
       baseURL: '',
 
       /**
+       * Styling to be set on the content elements.
+       *
+       * @attribute contentStyle
+       * @type String
+       * @default ''
+       */
+      contentStyle: '',
+
+      /**
        * Content currently being shown in the field
        *
        * @attribute currentContent
@@ -100,6 +109,7 @@ fetching and displaying content elements.
           return;
         }
         content.baseURL = this.baseURL;
+        content.cssText = this.contentStyle;
         // Setup the listeners before loading the data.
         content.addEventListener('load', this.handleContentLoaded.bind(this));
         content.fromJSON(contentData);

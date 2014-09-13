@@ -42,9 +42,12 @@ The `concerto-screen` element provides the main Concerto screen.
           style="left: {{position.left * 100}}%;
                  top: {{position.top * 100}}%;
                  width: {{(position.right - position.left) * 100}}%;
-                 height: {{(position.bottom - position.top) * 100}}%;
-                 {{position.style}}">
-          <concerto-field screenId="{{screenId}}" fieldId="{{position.field.id}}" baseURL="{{baseURL}}"></concerto-field>
+                 height: {{(position.bottom - position.top) * 100}}%;">
+          <concerto-field screenId="{{screenId}}"
+            fieldId="{{position.field.id}}"
+            baseURL="{{baseURL}}"
+            contentStyle="{{position.style}}">
+          </concerto-field>
         </div>
       </template>
     </div>

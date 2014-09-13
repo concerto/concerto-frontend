@@ -73,6 +73,13 @@ The `concerto-graphic` elements provides a large static image.
         this.$.graphic.classList.toggle('portrait', (imgRatio >= containerRatio));
         this.$.graphic.classList.toggle('landscape', (imgRatio <= containerRatio));
        },
+
+       /**
+        * Apply the styling information to the <img> tag, not the container.
+        */
+       cssTextChanged: function() {
+         this.$.graphic.style.cssText = this.cssText;
+       },
     });
   </script>
 </polymer-element>
