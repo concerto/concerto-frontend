@@ -98,6 +98,8 @@ fetching and displaying content elements.
         var meta = document.createElement('core-meta');
         meta.type = 'transition';
         this.transition = meta.byId('core-transition-fade');
+
+        this.handleContentLoadedBound = this.handleContentLoaded.bind(this);
       },
 
       domReady: function(){
@@ -203,7 +205,7 @@ fetching and displaying content elements.
         content.baseURL = this.baseURL;
         content.cssText = this.contentStyle;
         // Setup the listeners before loading the data.
-        content.addEventListener('load', this.handleContentLoaded.bind(this));
+        content.addEventListener('load', this.handleContentLoadedBound);
         content.fromJSON(simpleContentData);
         return true;
       },
@@ -214,7 +216,7 @@ fetching and displaying content elements.
        */
       handleContentLoaded: function(event) {
         var content = event.detail;
-        content.removeEventListener('load', this.handleContentLoaded);
+        content.removeEventListener('load', this.handleContentLoadedBound);
         this.displayContent(content);
       },
 
