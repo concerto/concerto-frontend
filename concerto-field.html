@@ -1,5 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../core-ajax/core-ajax.html">
+<link rel="import" href="../core-transition/core-transition-css.html">
 
 <!--
 The `concerto-field` element provides a field for a screen which manages
@@ -83,8 +84,20 @@ fetching and displaying content elements.
        * @default []
        */
 
+      /**
+       * Transition to be used when switching between content.
+       *
+       * @attribute transition
+       * @type core-transition
+       * @default core-transition-fade
+       */
+
       created: function (){
         this.contentQueue = [];
+
+        var meta = document.createElement('core-meta');
+        meta.type = 'transition';
+        this.transition = meta.byId('core-transition-fade');
       },
 
       domReady: function(){
@@ -215,13 +228,43 @@ fetching and displaying content elements.
        * @param {Element} content ConcertoContent element to be displayed.
        */
       displayContent: function(content) {
-        if (!this.currentContent) {
+        if (this.currentContent != content) {
+          content.style.zIndex = "100";
+          if (this.currentContent) {
+            // If there is current content, transition it out.
+            this.transition.setup(this.currentContent);
+            this.currentContent.addEventListener('core-transitionend', this.handleTransitionOutComplete);
+            this.transition.go(this.currentContent, {opened: false});
+
+            // Assign a zIndex for the new content > current content.
+            var zIndex = parseInt(this.currentContent.style.zIndex);
+            if (zIndex < 2147483647) {
+              // If the zIndex is greater than 2147483647 allow it to reset.
+              // This number is the max in some browsers, or so SO says.
+              content.style.zIndex = zIndex + 1;
+            }
+          }
+          // Transition the new content in.
+          this.transition.setup(content);
           this.$.content.appendChild(content);
-        } else {
-          this.$.content.replaceChild(content, this.currentContent);
+          this.transition.go(content, {opened: true});
+
+          this.currentContent = content;
         }
-        this.currentContent = content;
         this.scheduleNextContent(content.duration * 1000);
+      },
+
+      /**
+       * Handle the finished transition away from this content.
+       *
+       * At this point the content is no longer being shown in the screen, so we remove it from the DOM.
+       */
+      handleTransitionOutComplete: function(event) {
+        var oldContent = event.target;
+        oldContent.removeEventListener('core-transitionend', this.handleTransitionOutComplete);
+        if (oldContent.parentNode) {
+          oldContent.parentNode.removeChild(event.target);
+        }
       },
 
       /**

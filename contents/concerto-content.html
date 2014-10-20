@@ -8,7 +8,13 @@ building specific Concerto content elements.
 @status alpha
 -->
 <polymer-element name="concerto-content" attributes="contentId title duration autoLoad baseURL cssText">
-  <template></template>
+  <template>
+    <style>
+      :host {
+        position: absolute;
+      }
+    </style>
+  </template>
 
   <script>
     Polymer({

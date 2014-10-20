@@ -4,6 +4,7 @@
   "private": false,
   "dependencies": {
     "polymer": "Polymer/polymer#~0.4.2",
-    "core-ajax": "Polymer/core-ajax#~0.4.2"
+    "core-ajax": "Polymer/core-ajax#~0.4.2",
+    "core-transition": "Polymer/core-transition#~0.4.2"
   }
 }
