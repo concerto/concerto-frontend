@@ -47,15 +47,25 @@ The `concerto-graphic` elements provides a large static image.
        */
       path: '',
 
+      created: function (){
+        this.handleGraphicLoadBound = this.handleGraphicLoad.bind(this);
+      },
+
       /**
        * Listen to the `load` event of the image being displayed to determine
        * when to call `loaded`.
        */
       ready: function() {
-        this.$.graphic.addEventListener('load', function() {
-          this.loaded();
-          this.resize();
-        }.bind(this));
+        this.$.graphic.addEventListener('load', this.handleGraphicLoadBound);
+      },
+
+      /**
+       * Handle the event fired when the graphic has finished loading.
+       */
+      handleGraphicLoad: function() {
+        this.$.graphic.removeEventListener('load', this.handleGraphicLoadBound);
+        this.loaded();
+        this.resize();
       },
 
       /**
@@ -72,6 +82,13 @@ The `concerto-graphic` elements provides a large static image.
 
         this.$.graphic.classList.toggle('portrait', (imgRatio >= containerRatio));
         this.$.graphic.classList.toggle('landscape', (imgRatio <= containerRatio));
+       },
+
+       /**
+        * Apply the styling information to the <img> tag, not the container.
+        */
+       cssTextChanged: function() {
+         this.$.graphic.style.cssText = this.cssText;
        },
     });
   </script>

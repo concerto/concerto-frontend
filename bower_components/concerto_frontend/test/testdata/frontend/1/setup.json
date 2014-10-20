@@ -1,0 +1,76 @@
+{
+  "id":1,
+  "name":"Demo Screen",
+  "template":{
+    "id":1,
+    "name":"Default Template",
+    "path":"/frontend/1/templates/1.png",
+    "css_path":null,
+    "positions":[
+      {
+        "bottom":"0.796",
+        "id":1,
+        "left":"0.025",
+        "right":"0.592",
+        "style":"border:solid 2px #ccc;",
+        "top":"0.026",
+        "field_contents_path":"/frontend/1/fields/1/contents.json",
+        "field":{
+          "id":1,
+          "name":"Graphics",
+          "config":{
+
+          }
+        }
+      },
+      {
+        "bottom":"0.985",
+        "id":2,
+        "left":"0.221",
+        "right":"0.975",
+        "style":"font-family:Frobisher, Arial, sans-serif; color: #fff; font-weight: bold;",
+        "top":"0.885",
+        "field_contents_path":"/frontend/1/fields/2/contents.json",
+        "field":{
+          "id":2,
+          "name":"Ticker",
+          "config":{
+
+          }
+        }
+      },
+      {
+        "bottom":"0.811",
+        "id":3,
+        "left":"0.68",
+        "right":"0.98",
+        "style":"font-family:Frobisher, Arial, sans-serif; color: #fff;",
+        "top":"0.015",
+        "field_contents_path":"/frontend/1/fields/3/contents.json",
+        "field":{
+          "id":3,
+          "name":"Text",
+          "config":{
+
+          }
+        }
+      },
+      {
+        "bottom":"0.974",
+        "id":4,
+        "left":"0.024",
+        "right":"0.18",
+        "style":"color:#ccc; font-family:Frobisher, Arial, sans-serif; font-weight:bold; letter-spacing:.12em;",
+        "top":"0.885",
+        "field_contents_path":"/frontend/1/fields/4/contents.json",
+        "field":{
+          "id":4,
+          "name":"Time",
+          "config":{
+
+          }
+        }
+      }
+    ]
+  }
+}

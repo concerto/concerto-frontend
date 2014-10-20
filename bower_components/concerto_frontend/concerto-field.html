@@ -1,5 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../core-ajax/core-ajax.html">
+<link rel="import" href="../core-transition/core-transition-css.html">
 
 <!--
 The `concerto-field` element provides a field for a screen which manages
@@ -8,7 +9,7 @@ fetching and displaying content elements.
 @element concerto-field
 @status alpha
 -->
-<polymer-element name="concerto-field" attributes="screenId fieldId baseURL">
+<polymer-element name="concerto-field" attributes="screenId fieldId baseURL contentStyle">
   <template>
     <style>
       :host {
@@ -25,7 +26,8 @@ fetching and displaying content elements.
     <core-ajax id="contentsData"
       url="{{baseURL}}/frontend/{{screenId}}/fields/{{fieldId}}/contents.json"
       handleAs="json"
-      on-core-response="{{handleContentsData}}"></core-ajax>
+      on-core-response="{{handleContents}}"
+      on-core-error="{{handleContentsError}}"></core-ajax>
     <div id="content"></div>
   </template>
 
@@ -52,11 +54,20 @@ fetching and displaying content elements.
       /**
        * Base path to prepend to all URLs.
        *
-       * @attribute baseURK
+       * @attribute baseURL
        * @type String
        * @default ''
        */
       baseURL: '',
+
+      /**
+       * Styling to be set on the content elements.
+       *
+       * @attribute contentStyle
+       * @type String
+       * @default ''
+       */
+      contentStyle: '',
 
       /**
        * Content currently being shown in the field
@@ -65,62 +76,210 @@ fetching and displaying content elements.
        */
       currentContent: undefined,
 
-      domReady: function(){
-        this.requestContent();
+      /**
+       * Queued content data to be displayed.
+       *
+       * @attribute contentQueue
+       * @type Array
+       * @default []
+       */
+
+      /**
+       * Transition to be used when switching between content.
+       *
+       * @attribute transition
+       * @type core-transition
+       * @default core-transition-fade
+       */
+
+      created: function (){
+        this.contentQueue = [];
+
+        var meta = document.createElement('core-meta');
+        meta.type = 'transition';
+        this.transition = meta.byId('core-transition-fade');
+
+        this.handleContentLoadedBound = this.handleContentLoaded.bind(this);
       },
 
-      requestContent: function() {
-        console.log('Refreshing content.');
+      domReady: function(){
+        this.loadNextContent();
+      },
+
+      /**
+       * Fetch new content from the server.
+       *
+       * @function fetchContent
+       */
+      fetchContent: function() {
         this.$.contentsData.go();
       },
 
-      handleContentsData: function(event, response) {
-        // TODO(bamnet): Handle multiple contents being returned.
-        var data = response.response[0];
-        // TODO(bamnet): Improve handling of errors.
-        if (!data) {
-          return;
+      /**
+       * Handle the content data back from the server.
+       *
+       * If content is returned and the field is currently blank we schedule
+       * an immediate update of the field.
+       */
+      handleContents: function(event, response) {
+        Array.prototype.push.apply(this.contentQueue, response.response);
+        if(!this.currentContent && this.contentQueue.length >= 1) {
+          // We are currently not showing content and some is now in the queue.
+          // We schedule an update ASAP.
+          console.log('Urgent content update for field ' + this.fieldId);
+          this.scheduleNextContent(1);
         }
-        var contentData = {
-          title: data.name,
-          contentId: data.id,
-          duration: data.duration,
+      },
+
+      /**
+       * Handle an error loading content data.
+       */
+      handleContentsError: function(event, xhr) {
+        console.log('Error retrieving content data for field ' + this.fieldId);
+      },
+
+      /**
+       * Load the next piece of content in the queue.
+       *
+       * Grab the next piece of content from the front of the queue and start
+       * loading it. If the content fails to load move on to the next item in
+       * the queue and repeat until something works or the queue is empty.
+       *
+       * If there is no content in the queue or the queue is empty after
+       * grabbing the next piece call `fetchContent` to request more content.
+       *
+       * @function loadNextContent
+       */
+      loadNextContent: function() {
+        var contentData = this.contentQueue.shift();
+
+        // If the queue is empty fill it up.
+        if (!contentData || this.contentQueue.length < 1) {
+          this.fetchContent();
+        }
+
+        if(!contentData) {
+          // There was no content in the queue, try again in a few seconds.
+          console.log('No content available for field ' + this.fieldId);
+          this.scheduleNextContent(10 * 1000);
+        } else {
+          if(!this.loadContent(contentData)) {
+            // The contend failed to load, move on to the next one.
+            this.loadNextContent();
+          }
+        }
+      },
+
+      /**
+       * Load a piece of content based on the content data.
+       *
+       * Attempt to build a new HtmlElement for the content via the factory
+       * and call the `fromJSON` method on that element to begin loading.
+       *
+       * @function loadContent
+       * @param {Object} contentData
+       * @returns {Boolean} Return true if the content started loading OK.
+       */
+      loadContent: function(contentData) {
+        if (!contentData) {
+          console.log('Missing contentData for field ' + this.fieldId);
+          return false;
+        }
+        var simpleContentData = {
+          title: contentData.name,
+          contentId: contentData.id,
+          duration: contentData.duration,
         };
 
-        //Flatten render_details
-        Object.keys(data.render_details).forEach(function(key) {
-          contentData[key] = data.render_details[key];
+        // Flatten render_details
+        Object.keys(contentData.render_details).forEach(function(key) {
+          simpleContentData[key] = contentData.render_details[key];
         });
 
-        var contentType = data.type.toLowerCase();
+        var contentType = contentData.type.toLowerCase();
         var content = concerto.contentFactory.getType(contentType);
         if (!content) {
           console.log('No content type registered for ' + contentType);
-          this.scheduleUpdate(10 * 1000);  // Try again in 10 seconds.
-          return;
+          return false;
         }
         content.baseURL = this.baseURL;
+        content.cssText = this.contentStyle;
         // Setup the listeners before loading the data.
-        content.addEventListener('load', this.handleContentLoaded.bind(this));
-        content.fromJSON(contentData);
+        content.addEventListener('load', this.handleContentLoadedBound);
+        content.fromJSON(simpleContentData);
+        return true;
       },
 
+      /**
+       * Handle a piece of content that has fired the `load` event to indicate
+       * it is ready to be displayed.
+       */
       handleContentLoaded: function(event) {
         var content = event.detail;
-        content.removeEventListener('load', this.handleContentLoaded);
-        if (!this.currentContent) {
-          this.$.content.appendChild(content);
-        } else {
-          this.$.content.replaceChild(content, this.currentContent);
-        }
-        this.currentContent = content;
-        // TODO(bamnet): Swap this 100 with 1000 to get realtime.
-        this.scheduleUpdate(content.duration * 10000);
+        content.removeEventListener('load', this.handleContentLoadedBound);
+        this.displayContent(content);
       },
 
-      scheduleUpdate: function(msToWait) {
-        this.job('updateField' + this.fieldId, function() {
-          this.requestContent();
+      /**
+       * Display a HtmlElement representing a content in the field.
+       *
+       * Schedule the next content updating to occur after the content duration
+       * is up.
+       *
+       * @function displayContent
+       * @param {Element} content ConcertoContent element to be displayed.
+       */
+      displayContent: function(content) {
+        if (this.currentContent != content) {
+          content.style.zIndex = "100";
+          if (this.currentContent) {
+            // If there is current content, transition it out.
+            this.transition.setup(this.currentContent);
+            this.currentContent.addEventListener('core-transitionend', this.handleTransitionOutComplete);
+            this.transition.go(this.currentContent, {opened: false});
+
+            // Assign a zIndex for the new content > current content.
+            var zIndex = parseInt(this.currentContent.style.zIndex);
+            if (zIndex < 2147483647) {
+              // If the zIndex is greater than 2147483647 allow it to reset.
+              // This number is the max in some browsers, or so SO says.
+              content.style.zIndex = zIndex + 1;
+            }
+          }
+          // Transition the new content in.
+          this.transition.setup(content);
+          this.$.content.appendChild(content);
+          this.transition.go(content, {opened: true});
+
+          this.currentContent = content;
+        }
+        this.scheduleNextContent(content.duration * 1000);
+      },
+
+      /**
+       * Handle the finished transition away from this content.
+       *
+       * At this point the content is no longer being shown in the screen, so we remove it from the DOM.
+       */
+      handleTransitionOutComplete: function(event) {
+        var oldContent = event.target;
+        oldContent.removeEventListener('core-transitionend', this.handleTransitionOutComplete);
+        if (oldContent.parentNode) {
+          oldContent.parentNode.removeChild(event.target);
+        }
+      },
+
+      /**
+       * Schedule an attempt to load the next piece of content for this field.
+       *
+       * This uses Polymer's `job` tool so multiple jobs are only fired 1 time.
+       *
+       * @function scheduleNextContent
+       * @param {Number} msToWait Number of milliseconds to wait.
+       */
+      scheduleNextContent: function(msToWait) {
+        this.job('updateFieldContent' + this.fieldId, function() {
+          this.loadNextContent();
         }, msToWait);
       },
     });

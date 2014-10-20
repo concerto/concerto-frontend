@@ -7,8 +7,14 @@ building specific Concerto content elements.
 @element concerto-content
 @status alpha
 -->
-<polymer-element name="concerto-content" attributes="contentId title duration autoLoad baseURL">
-  <template></template>
+<polymer-element name="concerto-content" attributes="contentId title duration autoLoad baseURL cssText">
+  <template>
+    <style>
+      :host {
+        position: absolute;
+      }
+    </style>
+  </template>
 
   <script>
     Polymer({
@@ -57,9 +63,18 @@ building specific Concerto content elements.
        autoLoad: true,
 
       /**
+       * CSS styling information to be set on the content.
+       *
+       * @attribute cssText
+       * @type String
+       * @default ''
+       */
+      cssText: '',
+
+      /**
        * Base path to prepend to all URLs.
        *
-       * @attribute baseURK
+       * @attribute baseURL
        * @type String
        * @default ''
        */
@@ -99,6 +114,16 @@ building specific Concerto content elements.
           this.loaded();
         }
       },
+
+      /**
+       * Apply the new cssText back to the element.
+       *
+       * Different content types should override this method to set the styl on
+       * a more appropriate DOM element.
+       */
+      cssTextChanged: function() {
+        this.style.cssText = this.cssText;
+       },
     });
   </script>
 </polymer-element>

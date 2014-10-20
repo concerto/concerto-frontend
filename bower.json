@@ -16,7 +16,7 @@
     "tests"
   ],
   "dependencies": {
-    "core-ajax": "Polymer/core-ajax#~0.4.0",
+    "core-ajax": "Polymer/core-ajax#~0.4.2",
     "concerto_frontend": "https://github.com/bamnet/concerto-frontend.git"
   },
   "resolutions": {
