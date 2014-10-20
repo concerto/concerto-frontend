@@ -100,7 +100,8 @@ fetching and displaying content elements.
         this.$.contentsData.go();
       },
 
-      /** Handle the content data back from th server.
+      /**
+       * Handle the content data back from the server.
        *
        * If content is returned and the field is currently blank we schedule
        * an immediate update of the field.
@@ -155,7 +156,7 @@ fetching and displaying content elements.
       },
 
       /**
-       * Load a piece of content based on the content data from the server.
+       * Load a piece of content based on the content data.
        *
        * Attempt to build a new HtmlElement for the content via the factory
        * and call the `fromJSON` method on that element to begin loading.
@@ -175,7 +176,7 @@ fetching and displaying content elements.
           duration: contentData.duration,
         };
 
-        //Flatten render_details
+        // Flatten render_details
         Object.keys(contentData.render_details).forEach(function(key) {
           simpleContentData[key] = contentData.render_details[key];
         });
