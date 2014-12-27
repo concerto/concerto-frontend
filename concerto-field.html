@@ -167,22 +167,22 @@ fetching and displaying content elements.
           this.fetchContent();
         }
 
-        if(!contentData && this.fieldName != "Time") {
+        // Field kind is time, initialize content data for time
+        if (this.fieldName == "Time") {
+          var contentData = {
+            'duration': 15,
+            'id': 0,
+            'name': 'System Time',
+            'type': 'Client-Time',
+            'render_details': {'data': null}
+          };
+        }
+
+        if(!contentData) {
           // There was no content in the queue, try again in a few seconds.
           console.log('No content available for field ' + this.fieldId);
           this.scheduleNextContent(10 * 1000);
         } else {
-          // Field kind is time, initiate rendering process for client side time
-          if (this.fieldName == "Time") {
-            var contentData = {
-              'duration': 15,
-              'id': 0,
-              'name': 'System Time',
-              'type': 'Client-Time',
-              'render_details': {'data': null}
-            };
-          }
-
           if(!this.loadContent(contentData)) {
             // The contend failed to load, move on to the next one.
             this.loadNextContent();
