@@ -54,6 +54,10 @@ The 'concerto-client-time' element provides the current client side time
         hours = ((hours + 11) % 12 + 1);
         var minutes = this.dateObj.getMinutes();
 
+        if (minutes < 10) { 
+          minutes = "0" + minutes;
+        }
+
         return hours + ":" + minutes + " " + amPm;
       }
     });
