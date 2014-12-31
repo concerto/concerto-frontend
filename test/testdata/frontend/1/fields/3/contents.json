@@ -1,11 +1,29 @@
 [
   {
-    "duration":15,
+    "duration":8,
     "id":31,
     "name":"Test text text",
     "type":"HtmlText",
     "render_details":{
       "data":"\u003Cp\u003ETest HtmlText text\u003C/p\u003E\n"
+    }
+  },
+  {
+    "duration":8,
+    "id":32,
+    "name":"Test html text",
+    "type":"HtmlText",
+    "render_details":{
+      "data":"\u003Cp\u003ETest HtmlText text line 1\u003C/p\u003E\n \u003Cp\u003ETest HtmlText text line 2\u003C/p\u003E\n"
+    }
+  },
+  {
+    "duration":8,
+    "id":33,
+    "name":"Long html test",
+    "type":"HtmlText",
+    "render_details":{
+      "data":"\u003Cp\u003ELorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam in fermentum risus. Curabitur eget condimentum metus. Morbi vitae leo interdum, mattis risus vitae, tincidunt nisl. Sed sagittis augue urna, sed aliquet augue accumsan sodales. Aliquam porta pretium tempor. Vestibulum suscipit mi eu lobortis condimentum. Nulla at lectus a lacus placerat varius id id erat. Mauris malesuada arcu ligula, in porttitor erat scelerisque ut. Maecenas luctus et orci non aliquam. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed iaculis ut nunc vitae laoreet. Quisque porttitor libero id sem dignissim, imperdiet cursus dui aliquam. Integer et lorem fringilla ipsum sagittis viverra vulputate ac metus. Curabitur vel lacus velit. Nunc vel felis tellus. Nam elit turpis, tempor ac ullamcorper ut, condimentum sit amet nisl. Praesent tincidunt auctor pellentesque. Fusce fringilla leo iaculis augue semper gravida. Quisque vel neque ullamcorper metus finibus dignissim. Donec vel scelerisque massa. Quisque velit libero, semper eu euismod at, facilisis in sem. Ut auctor erat nec libero molestie iaculis. Pellentesque quis malesuada odio. Suspendisse at velit rhoncus, posuere tortor sed, congue lacus. Sed a egestas felis, non placerat turpis. Nullam quis pharetra purus. Ut in massa efficitur, consequat tortor non, condimentum neque. Pellentesque porttitor metus id egestas suscipit. Nam in enim ex. Nulla mattis auctor odio, id blandit ligula fermentum vitae. Duis accumsan consequat metus nec iaculis. Vestibulum ut pharetra eros. Nam molestie turpis lacus, vel accumsan nisl sollicitudin vitae. Curabitur enim justo, dictum id diam non, elementum rhoncus enim. Integer nisi dolor, ullamcorper sit amet scelerisque sit amet, tincidunt ac enim. Nunc dignissim imperdiet est, pretium ornare lorem. Nunc imperdiet, lorem a laoreet mattis, arcu erat blandit sem, sit amet posuere nisl diam in mauris. Nam quis turpis lectus. Nullam nec orci iaculis sem suscipit elementum eget vel est. Quisque imperdiet suscipit ex eu dignissim. Mauris quis semper nisl. Praesent consectetur blandit odio et viverra. Etiam quis mollis risus, eu posuere leo. Quisque sed odio tristique, tempor mi vitae, tincidunt enim. Nullam sapien augue, ullamcorper eget elementum vel, bibendum ac dolor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Vivamus nec euismod erat. Morbi quis sem sed turpis convallis egestas eget eu ex. Sed vel diam nec nibh fermentum egestas vitae eu erat. Donec convallis, lacus luctus mollis sagittis, turpis velit lacinia nulla, nec congue velit est nec enim. Phasellus fringilla pretium nulla ac bibendum. Donec condimentum a metus nec pellentesque. Duis fermentum vel massa non dapibus. Maecenas ornare felis lectus, at aliquam urna auctor sed. Integer vel ultricies ipsum. Vivamus quis neque vitae velit venenatis interdum.\u003C/p\u003E\n"
     }
   }
 ]

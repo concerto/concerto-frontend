@@ -9,7 +9,7 @@ fetching and displaying content elements.
 @element concerto-field
 @status alpha
 -->
-<polymer-element name="concerto-field" attributes="screenId fieldId baseURL contentStyle">
+<polymer-element name="concerto-field" attributes="screenId fieldId fieldName baseURL contentStyle">
   <template>
     <style>
       :host {
@@ -50,6 +50,16 @@ fetching and displaying content elements.
        * @default 0
        */
       fieldId: 0,
+
+      /**
+       * Backend name of the field.
+       * Often reflects the kind of content displayed.
+       *
+       * @attribute fieldName
+       * @type String
+       * @default ''
+       */
+      fieldName: '',
 
       /**
        * Base path to prepend to all URLs.
@@ -156,6 +166,17 @@ fetching and displaying content elements.
         // If the queue is empty fill it up.
         if (!contentData || this.contentQueue.length < 1) {
           this.fetchContent();
+        }
+
+        // Field kind is time, initialize content data for time
+        if (this.fieldName == "Time") {
+          var contentData = {
+            'duration': 15,
+            'id': 0,
+            'name': 'System Time',
+            'type': 'Client-Time',
+            'render_details': {'data': null}
+          };
         }
 
         if(!contentData) {

@@ -1,0 +1,67 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="concerto-content.html">
+
+<!--
+The 'concerto-client-time' element provides the current client side time
+
+@element concerto-client-time
+-->
+<polymer-element name="concerto-client-time" attributes="path" constructor="ConcertoClientTime" extends="concerto-content">
+  <template>
+    <div id="clientTime" class="clientTime"></div>
+  </template>
+
+  <script>
+    Polymer({
+      /**
+       * Date and Time Object 
+       *
+       * @attribute dateObj
+       * @type object Date
+       * @default null
+       */
+       dateObj: null,
+
+      /**
+       * Display the current client side time
+       *
+       */
+      domReady: function() {
+        this.dateObj = new Date();
+        var date = this.prepareDate();
+        var time = this.prepareTime();
+        this.$.clientTime.innerHTML = date + "<br />" + time;
+      },
+
+      /**
+       * Get the current date
+       *
+       */
+      prepareDate: function() {
+        return this.dateObj.toLocaleDateString();
+      },
+
+      /**
+       * Get the current time
+       *
+       */
+      prepareTime: function() {
+        var rawTime = this.dateObj.toLocaleTimeString();
+        var amPm = rawTime.slice(-2);
+
+        var hours = this.dateObj.getHours();
+        hours = ((hours + 11) % 12 + 1);
+        var minutes = this.dateObj.getMinutes();
+
+        if (minutes < 10) { 
+          minutes = "0" + minutes;
+        }
+
+        return hours + ":" + minutes + " " + amPm;
+      }
+    });
+  </script>
+</polymer-element>
+<script>
+  registerContentType();
+</script>
