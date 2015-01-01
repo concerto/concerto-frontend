@@ -174,7 +174,7 @@ fetching and displaying content elements.
             'duration': 15,
             'id': 0,
             'name': 'System Time',
-            'type': 'Client-Time',
+            'type': 'ClientTime',
             'render_details': {'data': null}
           };
         }
@@ -217,7 +217,7 @@ fetching and displaying content elements.
           simpleContentData[key] = contentData.render_details[key];
         });
 
-        var contentType = contentData.type.toLowerCase();
+        var contentType = contentData.type;
         var content = concerto.contentFactory.getType(contentType);
         if (!content) {
           console.log('No content type registered for ' + contentType);
