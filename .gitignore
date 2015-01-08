@@ -6,3 +6,7 @@ core-transition
 platform
 polymer
 webcomponentsjs
+
+# Ignore NPM modules and log
+npm-debug.log
+node_modules
