@@ -1,1 +1,0 @@
-var concerto=concerto||{};concerto.contentFactory=function(){var a={};return{getType:function(b){return a[b]?new a[b]:void 0},registerType:function(b,c){if(c){var d=c.prototype;"contentId"in d&&"title"in d&&(a[b]=c)}}}}(),PolymerExpressions.prototype.resolveURL=function(a,b){var c=new RegExp("^(?:[a-z]+:)?//","i");return a&&b&&!c.test(a)?b+a:a};

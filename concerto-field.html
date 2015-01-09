@@ -86,6 +86,15 @@ fetching and displaying content elements.
       currentContent: undefined,
 
       /**
+       * Count of sequential errors loading content.
+       *
+       * @atttribute contentErrorCount
+       * @type Number
+       * @default 0
+       */
+      contentErrorCount: 0,
+
+      /**
        * Queued content data to be displayed.
        *
        * @attribute contentQueue
@@ -184,8 +193,22 @@ fetching and displaying content elements.
           this.scheduleNextContent(10 * 1000);
         } else {
           if(!this.loadContent(contentData)) {
-            // The contend failed to load, move on to the next one.
-            this.loadNextContent();
+            // The contend failed to load.
+            console.log('Unable to load ' + contentData.type + ' content for field ' + this.fieldId);
+            this.contentErrorCount++;
+            // Allow the field to retry 5 times quickly.
+            if (this.contentErrorCount <= 5) {
+              // Move on to the next content.
+              this.loadNextContent();
+            } else {
+              // Schedule a delayed retry of up to 5 minutes.
+              var retryDuration = Math.min((this.contentErrorCount - 1) * 30, 600);
+              console.log('Retrying in ' + retryDuration + ' seconds.');
+              this.scheduleNextContent(retryDuration * 1000);
+            }
+          } else {
+            // The content loaded sucessfully.
+            this.contentErrorCount = 0;
           }
         }
       },
@@ -216,7 +239,7 @@ fetching and displaying content elements.
           simpleContentData[key] = contentData.render_details[key];
         });
 
-        var contentType = contentData.type.toLowerCase();
+        var contentType = contentData.type;
         var content = concerto.contentFactory.getType(contentType);
         if (!content) {
           console.log('No content type registered for ' + contentType);
