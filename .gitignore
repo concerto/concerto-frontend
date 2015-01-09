@@ -1,11 +1,4 @@
 bower_components
-core-ajax
-core-component-page
-core-meta
-core-transition
-platform
-polymer
-webcomponentsjs
 
 # Ignore NPM modules and log
 npm-debug.log
