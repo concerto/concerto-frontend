@@ -3,8 +3,12 @@
   "version": "0.0.0",
   "private": false,
   "dependencies": {
-    "polymer": "Polymer/polymer#~0.4.2",
+    "polymer": "Polymer/polymer#~0.5.2",
     "core-ajax": "Polymer/core-ajax#~0.4.2",
     "core-transition": "Polymer/core-transition#~0.4.2"
+  },
+  "resolutions": {
+    "polymer": "~0.5.2",
+    "core-component-page": "^0.5.0"
   }
 }
