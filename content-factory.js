@@ -29,6 +29,7 @@ concerto.contentFactory = (function () {
     registerType: function (typeName, ContentType) {
       if (!ContentType) {
         // Do not register content types which do not have a public constructor.
+        console.log("======== Unable to register content type: " + typeName + " - " + ContentType);
         return;
       }
       var proto = ContentType.prototype;

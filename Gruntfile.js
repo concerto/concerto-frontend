@@ -15,11 +15,18 @@ module.exports = function(grunt) {
         dest: "frontend.html"
       },
     },
+    watch: {
+      scripts: {
+        files: ['*.js', '*.html', 'contents/*.html'],
+        tasks: ['vulcanize']
+      },
+    },
   });
 
   // Load in the Grunt plugins that will be used
   //  these should be installed via 'npm install' before running 'grunt'
-  grunt.loadNpmTasks('grunt-vulcanize');
+  grunt.loadNpmTasks('grunt-vulcanize'); // concatenate Polymer elements
+  grunt.loadNpmTasks('grunt-contrib-watch'); // run tasks when files are modified
 
   // Set up our default task that is run when 'grunt' is executed
   grunt.registerTask('default', ['vulcanize']);
