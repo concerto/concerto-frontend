@@ -8,3 +8,7 @@ Concerto Frontend
 3. bower install --save Polymer/polymer
 4. npm install
 5. grunt (add --verbose for extra debugging details)
+
+#### Development notes
+
+Run ```grunt watch``` to automatically vulcanize files after saving any changes.

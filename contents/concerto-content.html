@@ -135,16 +135,11 @@ building specific Concerto content elements.
    * element is being defined and setup an event listener to register it once
    * Polymer has finished loading all elements.
    */
-  function registerContentType(){
-    // Grab the current import document.
-    var contentDocument = document.currentScript.ownerDocument;
-    // Find the element being described.
-    var elem = contentDocument.querySelector('polymer-element');
+  function registerContentType(contentName, klass){
     window.addEventListener('polymer-ready', function(){
       if (concerto && concerto.contentFactory) {
         // concerto-ticker should be known as ticker.
-        var name = elem.getAttribute('name').replace(/^concerto-/, '');
-        var klass = elem.getAttribute('constructor');
+        var name = contentName.replace(/^concerto-/, '');
         concerto.contentFactory.registerType(name, window[klass]);
       }
     });
