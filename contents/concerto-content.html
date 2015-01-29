@@ -135,7 +135,7 @@ building specific Concerto content elements.
    * element is being defined and setup an event listener to register it once
    * Polymer has finished loading all elements.
    */
-  function registerContentType(){
+  function registerContentType(contentName, klass){
     window.addEventListener('polymer-ready', function(){
       if (concerto && concerto.contentFactory) {
         // concerto-ticker should be known as ticker.
