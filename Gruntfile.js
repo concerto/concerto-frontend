@@ -11,7 +11,7 @@ module.exports = function(grunt) {
         strip: true
       },
       files: {
-        src: "demo.html",
+        src: "screen.html",
         dest: "frontend.html"
       },
     },
