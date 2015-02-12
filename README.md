@@ -12,3 +12,4 @@ Concerto Frontend
 #### Development notes
 
 Run ```grunt watch``` to automatically vulcanize files after saving any changes.
+When testing with core Concerto, include the gem by filepath and run the grunt tasks to automatically update the vulcanized _frontend.html. 
