@@ -12,3 +12,8 @@ Concerto Frontend
 #### Development notes
 
 Run ```grunt watch``` to automatically vulcanize files after saving any changes.
+
+#### Building the concerto_frontend gem
+
+Change direcetories to the concerto-frontend-gem and then run ```gem build concerto_frontend.gemspec``` 
+Push final gem to RubyGems using ```gem push concerto_frontend-X.X.X.gem``` and add to core Concerto as concerto_frontend with the latest version number. 
