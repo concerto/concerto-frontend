@@ -12,7 +12,7 @@ module.exports = function(grunt) {
       },
       files: {
         src: "screen.html",
-        dest: "frontend.html"
+        dest: "concerto-frontend-gem/app/views/concerto_frontend/_frontend.html"
       },
     },
     watch: {
