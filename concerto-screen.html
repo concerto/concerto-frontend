@@ -53,6 +53,12 @@ The `concerto-screen` element provides the main Concerto screen.
         </template>
       </div>
     </template>
+    <!-- ajax request for changes to screen setup -->
+    <core-ajax id="updateScreenData"
+      url="{{baseURL}}/frontend/{{screenId}}/setup.json"
+      handleAs="json"
+      on-core-response="{{refreshScreen}}">
+    </core-ajax>
   </template>
 
   <script>
@@ -106,7 +112,33 @@ The `concerto-screen` element provides the main Concerto screen.
         var data = response.response;
         this.name = data.name;
         this.template = data.template;
+
+        // periodically check screen setup for changes
+        setInterval(this.checkScreenData, 1000, this.$.updateScreenData);
       },
+
+      checkScreenData: function(ajax) {
+        // get screen setup.json
+        ajax.go();
+      }, 
+
+      refreshScreen: function(event, response) {
+        // reload screen if changes are found in screen setup
+        var template = this.template;
+        var response = response.response;
+
+        // Check for changes to screen's effective template
+        if (template.name != response.template.name) {
+          location.reload();
+        }
+
+        // Check for any changes to positions
+        for (var position in this.template.positions) {
+          if (!(position in response.template.positions)) {
+            location.reload();
+          }
+        }
+      }
     });
   </script>
 </polymer-element>
