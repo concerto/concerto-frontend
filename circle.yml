@@ -1,5 +1,6 @@
 dependencies:
   pre:
+    - gem install package_cloud
     - bower install
   post:
     - grunt --verbose
@@ -10,3 +11,9 @@ test:
     - echo "No tests here. :("
   post:
     - mv concerto-frontend-gem/concerto_frontend-*.gem $CIRCLE_ARTIFACTS
+
+deployment:
+  production:
+    branch: master
+    commands:
+      - package_cloud push kenley/concerto-test $CIRCLE_ARTIFACTS/concerto_frontend-*.gem
