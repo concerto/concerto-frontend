@@ -1,0 +1,12 @@
+dependencies:
+  pre:
+    - bower install
+  post:
+    - grunt --verbose
+    - cd concerto-frontend-gem && gem build concerto_frontend.gemspec
+
+test:
+  override:
+    - echo "No tests here. :("
+  post:
+    - mv concerto-frontend-gem/concerto_frontend-*.gem $CIRCLE_ARTIFACTS
