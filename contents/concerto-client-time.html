@@ -34,8 +34,8 @@ The 'concerto-client-time' element provides the current client side time
         this.dateObj = new Date();
         var date = this.prepareDate();
         var time = this.prepareTime();
-        /* Adjust font to largest size possible that fits in time field */
         this.$.clientTime.innerHTML = "<p>" + date + "<br />" + time + "</p>"
+        /* Adjust font to largest size possible that fits in time field */
         PolymerExpressions.prototype.optimalFontSize(this, this.$.clientTime);
       },
 
