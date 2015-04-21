@@ -3,3 +3,6 @@ bower_components
 # Ignore NPM modules and log
 npm-debug.log
 node_modules
+
+# Prevent accidental Gem checkins.
+concerto-frontend-gem/concerto_frontend-*.gem
