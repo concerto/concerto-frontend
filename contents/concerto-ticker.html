@@ -11,6 +11,11 @@ production Ticker implementation.
 -->
 <polymer-element name="concerto-ticker" attributes="data" constructor="ConcertoTicker" extends="concerto-content">
   <template>
+    <style>
+      #ticker * {
+        margin: 0;
+      }
+    </style>
     <div id="ticker" class="ticker"></div>
   </template>
 
@@ -24,6 +29,13 @@ production Ticker implementation.
        * @default ''
        */
        data: '',
+
+      /**
+       * When the dom is ready, find optimal font size
+       */
+       domReady: function() {
+         PolymerExpressions.prototype.optimalFontSize(this, this.$.ticker);
+       },
 
        /**
         * Display the Ticker Text data.

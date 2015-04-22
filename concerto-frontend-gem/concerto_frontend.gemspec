@@ -7,13 +7,14 @@ require "concerto_frontend/version"
 Gem::Specification.new do |s|
   s.name        = "concerto_frontend"
   s.version     = ConcertoFrontend::VERSION
+  s.license     = "Apache-2.0"
   s.authors     = ["Gabriel Perez"]
   s.email       = ["perez283@gmail.com"]
   s.homepage    = "https://concerto-signage.org"
   s.summary     = "Concerto Frontend"
   s.description = "A Ruby Gem that contains the Concerto polymer frontend."
 
-  s.files = Dir["{app,config,db,lib}/**/*", "LICENSE", "Rakefile", "README.md"]
+  s.files = Dir["{app,config,db,lib}/**/*", "Rakefile"]
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency "rails", "~> 4.1.6"

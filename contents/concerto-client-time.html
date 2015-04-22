@@ -7,6 +7,11 @@ The 'concerto-client-time' element provides the current client side time
 -->
 <polymer-element name="concerto-client-time" attributes="path" constructor="ConcertoClientTime" extends="concerto-content">
   <template>
+    <style>
+      #clientTime * {
+        margin: 0;
+      }
+    </style>
     <div id="clientTime" class="clientTime"></div>
   </template>
 
@@ -29,7 +34,9 @@ The 'concerto-client-time' element provides the current client side time
         this.dateObj = new Date();
         var date = this.prepareDate();
         var time = this.prepareTime();
-        this.$.clientTime.innerHTML = date + "<br />" + time;
+        this.$.clientTime.innerHTML = "<p>" + date + "<br />" + time + "</p>"
+        /* Adjust font to largest size possible that fits in time field */
+        PolymerExpressions.prototype.optimalFontSize(this, this.$.clientTime);
       },
 
       /**
