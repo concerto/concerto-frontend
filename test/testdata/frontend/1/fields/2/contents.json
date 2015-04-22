@@ -1,4 +1,4 @@
-[
+[ 
   {
     "duration":6,
     "id":21,
@@ -15,6 +15,15 @@
     "type":"Ticker",
     "render_details":{
       "data":"This is ticker text without any HTML markup."
+    }
+  },
+  {
+    "duration": 8,
+    "id":23,
+    "name":"Long ticker text",
+    "type":"Ticker",
+    "render_details":{
+      "data":"This is an example of ticker text that is much longer than necessary and will test the frontend's ability to resize content appropriately so that it fits in the field. With any luck, this should work. If you can read this line, then things are looking okay."
     }
   }
 ]

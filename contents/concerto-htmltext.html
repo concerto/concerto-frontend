@@ -8,6 +8,11 @@ The `concerto-htmltext` elements provides a static div displaying HTML.
 -->
 <polymer-element name="concerto-htmltext" attributes="data" constructor="ConcertoHtmlText" extends="concerto-content">
   <template>
+    <style>
+      #htmltext * {
+        margin: 0;
+      }
+    </style>
     <div id="htmltext" class="htmltext"></div>
   </template>
 
@@ -21,6 +26,13 @@ The `concerto-htmltext` elements provides a static div displaying HTML.
        * @default ''
        */
        data: '',
+
+      /**
+       * When the dom is ready, find optimal font size
+       */
+       domReady: function() {
+         PolymerExpressions.prototype.optimalFontSize(this, this.$.htmltext);
+       },
 
        /**
         * Display the HTMLText data.
