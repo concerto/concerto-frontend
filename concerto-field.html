@@ -8,7 +8,7 @@ fetching and displaying content elements.
 @element concerto-field
 @status alpha
 -->
-<polymer-element name="concerto-field" attributes="screenId fieldId fieldName baseURL contentStyle">
+<polymer-element name="concerto-field" attributes="screenId fieldId fieldName baseURL contentStyle optConfig">
   <template>
     <style>
       :host {
@@ -108,6 +108,14 @@ fetching and displaying content elements.
        * @attribute transition
        * @type core-transition
        * @default core-transition-fade
+       */
+
+      /**
+       * Optional field config
+       *
+       * @attribute optConfig
+       * @type Object
+       * @default {}
        */
 
       created: function (){
@@ -233,6 +241,7 @@ fetching and displaying content elements.
           title: contentData.name,
           contentId: contentData.id,
           duration: contentData.duration,
+          config: this.optConfig
         };
 
         // Flatten render_details

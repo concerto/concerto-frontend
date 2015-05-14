@@ -105,7 +105,11 @@ building specific Concerto content elements.
       fromJSON: function(data) {
         Object.keys(data).forEach(function(key) {
           if (key in this) {
-            this.setAttribute(key, data[key]);
+            if (typeof data[key] == 'object') {
+              this.setAttribute(key, JSON.stringify(data[key]));
+            } else {
+              this.setAttribute(key, data[key]);
+            }
           }
         }.bind(this));
         if (this.autoLoad) {
