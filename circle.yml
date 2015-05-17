@@ -16,4 +16,4 @@ deployment:
   production:
     branch: master
     commands:
-      - package_cloud push kenley/concerto-test $CIRCLE_ARTIFACTS/concerto_frontend-*.gem
+      - package_cloud push kenley/concerto-test $CIRCLE_ARTIFACTS/concerto_frontend-*.gem || true
