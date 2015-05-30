@@ -1,27 +1,21 @@
-<link rel="import" href="bower_components/core-ajax/core-ajax.html">
-<link rel="import" href="bower_components/core-transition/core-transition-css.html">
-
 <!--
 The `concerto-field` element provides a field for a screen which manages
 fetching and displaying content elements.
-
-@element concerto-field
-@status alpha
 -->
-<polymer-element name="concerto-field" attributes="screenId fieldId fieldName baseURL contentStyle optConfig">
-  <template>
-    <style>
-      :host {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
+<dom-module id="concerto-field">
+  <style>
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
 
-      #content {
-        width: 100%;
-        height: 100%;
-      }
-    </style>
+    #content {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <template>
     <core-ajax id="contentsData"
       url="{{baseURL}}/frontend/{{screenId}}/fields/{{fieldId}}/contents.json"
       handleAs="json"
@@ -29,312 +23,265 @@ fetching and displaying content elements.
       on-core-error="{{handleContentsError}}"></core-ajax>
     <div id="content"></div>
   </template>
+</dom-module>
 
-  <script>
-    Polymer({
-      /**
-       * Backend ID of the screen.
-       *
-       * @attribute screenId
-       * @type Number
-       * @default 0
-       */
-      screenId: 0,
+<script>
+  Polymer({
+    is: "concerto-field",
 
-      /**
-       * Backend ID of the field.
-       *
-       * @attribute fieldId
-       * @type Number
-       * @default 0
-       */
-      fieldId: 0,
-
-      /**
-       * Backend name of the field.
-       * Often reflects the kind of content displayed.
-       *
-       * @attribute fieldName
-       * @type String
-       * @default ''
-       */
-      fieldName: '',
-
-      /**
-       * Base path to prepend to all URLs.
-       *
-       * @attribute baseURL
-       * @type String
-       * @default ''
-       */
-      baseURL: '',
-
-      /**
-       * Styling to be set on the content elements.
-       *
-       * @attribute contentStyle
-       * @type String
-       * @default ''
-       */
-      contentStyle: '',
-
-      /**
-       * Content currently being shown in the field
-       *
-       * @attribute currentContent
-       */
-      currentContent: undefined,
-
-      /**
-       * Count of sequential errors loading content.
-       *
-       * @atttribute contentErrorCount
-       * @type Number
-       * @default 0
-       */
-      contentErrorCount: 0,
-
-      /**
-       * Queued content data to be displayed.
-       *
-       * @attribute contentQueue
-       * @type Array
-       * @default []
-       */
-
-      /**
-       * Transition to be used when switching between content.
-       *
-       * @attribute transition
-       * @type core-transition
-       * @default core-transition-fade
-       */
-
-      /**
-       * Optional field config
-       *
-       * @attribute optConfig
-       * @type Object
-       * @default {}
-       */
-
-      created: function (){
-        this.contentQueue = [];
-
-        var meta = document.createElement('core-meta');
-        meta.type = 'transition';
-        this.transition = meta.byId('core-transition-fade');
-
-        this.handleContentLoadedBound = this.handleContentLoaded.bind(this);
+    properties: {
+      screenId: {
+        type: Number,
+        value: 0
       },
-
-      domReady: function(){
-        this.loadNextContent();
+      fieldId: {
+        type: Number,
+        value: 0
       },
-
-      /**
-       * Fetch new content from the server.
-       *
-       * @function fetchContent
-       */
-      fetchContent: function() {
-        this.$.contentsData.go();
+      fieldName: {
+        type: String,
+        value: ''
       },
-
-      /**
-       * Handle the content data back from the server.
-       *
-       * If content is returned and the field is currently blank we schedule
-       * an immediate update of the field.
-       */
-      handleContents: function(event, response) {
-        Array.prototype.push.apply(this.contentQueue, response.response);
-        if(!this.currentContent && this.contentQueue.length >= 1) {
-          // We are currently not showing content and some is now in the queue.
-          // We schedule an update ASAP.
-          console.log('Urgent content update for field ' + this.fieldId);
-          this.scheduleNextContent(1);
-        }
+      baseURL: {
+        type: String,
+        value: ''
       },
-
-      /**
-       * Handle an error loading content data.
-       */
-      handleContentsError: function(event, xhr) {
-        console.log('Error retrieving content data for field ' + this.fieldId);
+      contentStyle: {
+        type: String,
+        value: ''
       },
-
-      /**
-       * Load the next piece of content in the queue.
-       *
-       * Grab the next piece of content from the front of the queue and start
-       * loading it. If the content fails to load move on to the next item in
-       * the queue and repeat until something works or the queue is empty.
-       *
-       * If there is no content in the queue or the queue is empty after
-       * grabbing the next piece call `fetchContent` to request more content.
-       *
-       * @function loadNextContent
-       */
-      loadNextContent: function() {
-        var contentData = this.contentQueue.shift();
-
-        // If the queue is empty fill it up.
-        if (!contentData || this.contentQueue.length < 1) {
-          this.fetchContent();
-        }
-
-        // Field kind is time, initialize content data for time
-        if (this.fieldName == "Time") {
-          var contentData = {
-            'duration': 15,
-            'id': 0,
-            'name': 'System Time',
-            'type': 'ClientTime',
-            'render_details': {'data': null}
-          };
-        }
-
-        if(!contentData) {
-          // There was no content in the queue, try again in a few seconds.
-          console.log('No content available for field ' + this.fieldId);
-          this.scheduleNextContent(10 * 1000);
-        } else {
-          if(!this.loadContent(contentData)) {
-            // The contend failed to load.
-            console.log('Unable to load ' + contentData.type + ' content for field ' + this.fieldId);
-            this.contentErrorCount++;
-            // Allow the field to retry 5 times quickly.
-            if (this.contentErrorCount <= 5) {
-              // Move on to the next content.
-              this.loadNextContent();
-            } else {
-              // Schedule a delayed retry of up to 5 minutes.
-              var retryDuration = Math.min((this.contentErrorCount - 1) * 30, 600);
-              console.log('Retrying in ' + retryDuration + ' seconds.');
-              this.scheduleNextContent(retryDuration * 1000);
-            }
-          } else {
-            // The content loaded sucessfully.
-            this.contentErrorCount = 0;
-          }
-        }
+      currentContent: {
+        type: Object,
+        value: undefined
       },
+      contentErrorCount: {
+        type: Number,
+        value: 0
+      },
+      contentQueue: {
+        type: Array,
+        value: []
+      },
+      transition: {
+        type: Object,
+        value: undefined
+      },
+      optConfig: {
+        type: Object,
+        value: {}
+      }
+    }
 
-      /**
-       * Load a piece of content based on the content data.
-       *
-       * Attempt to build a new HtmlElement for the content via the factory
-       * and call the `fromJSON` method on that element to begin loading.
-       *
-       * @function loadContent
-       * @param {Object} contentData
-       * @returns {Boolean} Return true if the content started loading OK.
-       */
-      loadContent: function(contentData) {
-        if (!contentData) {
-          console.log('Missing contentData for field ' + this.fieldId);
-          return false;
-        }
+    created: function (){
+      this.handleContentLoadedBound = this.handleContentLoaded.bind(this);
+    },
 
-        var simpleContentData = {
-          title: contentData.name,
-          contentId: contentData.id,
-          duration: contentData.duration,
-          config: this.optConfig
+    domReady: function(){
+      this.loadNextContent();
+    },
+
+    /**
+     * Fetch new content from the server.
+     *
+     * @function fetchContent
+     */
+    fetchContent: function() {
+      this.$.contentsData.go();
+    },
+
+    /**
+     * Handle the content data back from the server.
+     *
+     * If content is returned and the field is currently blank we schedule
+     * an immediate update of the field.
+     */
+    handleContents: function(event, response) {
+      Array.prototype.push.apply(this.contentQueue, response.response);
+      if(!this.currentContent && this.contentQueue.length >= 1) {
+        // We are currently not showing content and some is now in the queue.
+        // We schedule an update ASAP.
+        console.log('Urgent content update for field ' + this.fieldId);
+        this.scheduleNextContent(1);
+      }
+    },
+
+    /**
+     * Handle an error loading content data.
+     */
+    handleContentsError: function(event, xhr) {
+      console.log('Error retrieving content data for field ' + this.fieldId);
+    },
+
+    /**
+     * Load the next piece of content in the queue.
+     *
+     * Grab the next piece of content from the front of the queue and start
+     * loading it. If the content fails to load move on to the next item in
+     * the queue and repeat until something works or the queue is empty.
+     *
+     * If there is no content in the queue or the queue is empty after
+     * grabbing the next piece call `fetchContent` to request more content.
+     *
+     * @function loadNextContent
+     */
+    loadNextContent: function() {
+      var contentData = this.contentQueue.shift();
+
+      // If the queue is empty fill it up.
+      if (!contentData || this.contentQueue.length < 1) {
+        this.fetchContent();
+      }
+
+      // Field kind is time, initialize content data for time
+      if (this.fieldName == "Time") {
+        var contentData = {
+          'duration': 15,
+          'id': 0,
+          'name': 'System Time',
+          'type': 'ClientTime',
+          'render_details': {'data': null}
         };
+      }
 
-        // Flatten render_details
-        Object.keys(contentData.render_details).forEach(function(key) {
-          simpleContentData[key] = contentData.render_details[key];
-        });
-
-        var contentType = contentData.type;
-        var content = concerto.contentFactory.getType(contentType);
-        if (!content) {
-          console.log('No content type registered for ' + contentType);
-          return false;
-        }
-        content.baseURL = this.baseURL;
-        content.cssText = this.contentStyle;
-        // Setup the listeners before loading the data.
-        content.addEventListener('load', this.handleContentLoadedBound);
-        content.fromJSON(simpleContentData);
-        return true;
-      },
-
-      /**
-       * Handle a piece of content that has fired the `load` event to indicate
-       * it is ready to be displayed.
-       */
-      handleContentLoaded: function(event) {
-        var content = event.detail;
-        content.removeEventListener('load', this.handleContentLoadedBound);
-        this.displayContent(content);
-      },
-
-      /**
-       * Display a HtmlElement representing a content in the field.
-       *
-       * Schedule the next content updating to occur after the content duration
-       * is up.
-       *
-       * @function displayContent
-       * @param {Element} content ConcertoContent element to be displayed.
-       */
-      displayContent: function(content) {
-        if (this.currentContent != content) {
-          content.style.zIndex = "100";
-          if (this.currentContent) {
-            // If there is current content, transition it out.
-            this.transition.setup(this.currentContent);
-            this.currentContent.addEventListener('core-transitionend', this.handleTransitionOutComplete);
-            this.transition.go(this.currentContent, {opened: false});
-
-            // Assign a zIndex for the new content > current content.
-            var zIndex = parseInt(this.currentContent.style.zIndex);
-            if (zIndex < 2147483647) {
-              // If the zIndex is greater than 2147483647 allow it to reset.
-              // This number is the max in some browsers, or so SO says.
-              content.style.zIndex = zIndex + 1;
-            }
+      if(!contentData) {
+        // There was no content in the queue, try again in a few seconds.
+        console.log('No content available for field ' + this.fieldId);
+        this.scheduleNextContent(10 * 1000);
+      } else {
+        if(!this.loadContent(contentData)) {
+          // The contend failed to load.
+          console.log('Unable to load ' + contentData.type + ' content for field ' + this.fieldId);
+          this.contentErrorCount++;
+          // Allow the field to retry 5 times quickly.
+          if (this.contentErrorCount <= 5) {
+            // Move on to the next content.
+            this.loadNextContent();
+          } else {
+            // Schedule a delayed retry of up to 5 minutes.
+            var retryDuration = Math.min((this.contentErrorCount - 1) * 30, 600);
+            console.log('Retrying in ' + retryDuration + ' seconds.');
+            this.scheduleNextContent(retryDuration * 1000);
           }
-          // Transition the new content in.
-          this.transition.setup(content);
-          this.$.content.appendChild(content);
-          this.transition.go(content, {opened: true});
-
-          this.currentContent = content;
+        } else {
+          // The content loaded sucessfully.
+          this.contentErrorCount = 0;
         }
-        this.scheduleNextContent(content.duration * 1000);
-      },
+      }
+    },
 
-      /**
-       * Handle the finished transition away from this content.
-       *
-       * At this point the content is no longer being shown in the screen, so we remove it from the DOM.
-       */
-      handleTransitionOutComplete: function(event) {
-        var oldContent = event.target;
-        oldContent.removeEventListener('core-transitionend', this.handleTransitionOutComplete);
-        if (oldContent.parentNode) {
-          oldContent.parentNode.removeChild(event.target);
+    /**
+     * Load a piece of content based on the content data.
+     *
+     * Attempt to build a new HtmlElement for the content via the factory
+     * and call the `fromJSON` method on that element to begin loading.
+     *
+     * @function loadContent
+     * @param {Object} contentData
+     * @returns {Boolean} Return true if the content started loading OK.
+     */
+    loadContent: function(contentData) {
+      if (!contentData) {
+        console.log('Missing contentData for field ' + this.fieldId);
+        return false;
+      }
+
+      var simpleContentData = {
+        title: contentData.name,
+        contentId: contentData.id,
+        duration: contentData.duration,
+        config: this.optConfig
+      };
+
+      // Flatten render_details
+      Object.keys(contentData.render_details).forEach(function(key) {
+        simpleContentData[key] = contentData.render_details[key];
+      });
+
+      var contentType = contentData.type;
+      var content = concerto.contentFactory.getType(contentType);
+      if (!content) {
+        console.log('No content type registered for ' + contentType);
+        return false;
+      }
+      content.baseURL = this.baseURL;
+      content.cssText = this.contentStyle;
+      // Setup the listeners before loading the data.
+      content.addEventListener('load', this.handleContentLoadedBound);
+      content.fromJSON(simpleContentData);
+      return true;
+    },
+
+    /**
+     * Handle a piece of content that has fired the `load` event to indicate
+     * it is ready to be displayed.
+     */
+    handleContentLoaded: function(event) {
+      var content = event.detail;
+      content.removeEventListener('load', this.handleContentLoadedBound);
+      this.displayContent(content);
+    },
+
+    /**
+     * Display a HtmlElement representing a content in the field.
+     *
+     * Schedule the next content updating to occur after the content duration
+     * is up.
+     *
+     * @function displayContent
+     * @param {Element} content ConcertoContent element to be displayed.
+     */
+    displayContent: function(content) {
+      if (this.currentContent != content) {
+        content.style.zIndex = "100";
+        if (this.currentContent) {
+          // If there is current content, transition it out.
+          this.transition.setup(this.currentContent);
+          this.currentContent.addEventListener('core-transitionend', this.handleTransitionOutComplete);
+          this.transition.go(this.currentContent, {opened: false});
+
+          // Assign a zIndex for the new content > current content.
+          var zIndex = parseInt(this.currentContent.style.zIndex);
+          if (zIndex < 2147483647) {
+            // If the zIndex is greater than 2147483647 allow it to reset.
+            // This number is the max in some browsers, or so SO says.
+            content.style.zIndex = zIndex + 1;
+          }
         }
-      },
+        // Transition the new content in.
+        this.transition.setup(content);
+        this.$.content.appendChild(content);
+        this.transition.go(content, {opened: true});
 
-      /**
-       * Schedule an attempt to load the next piece of content for this field.
-       *
-       * This uses Polymer's `job` tool so multiple jobs are only fired 1 time.
-       *
-       * @function scheduleNextContent
-       * @param {Number} msToWait Number of milliseconds to wait.
-       */
-      scheduleNextContent: function(msToWait) {
-        this.job('updateFieldContent' + this.fieldId, function() {
-          this.loadNextContent();
-        }, msToWait);
-      },
-    });
-  </script>
-</polymer-element>
+        this.currentContent = content;
+      }
+      this.scheduleNextContent(content.duration * 1000);
+    },
+
+    /**
+     * Handle the finished transition away from this content.
+     *
+     * At this point the content is no longer being shown in the screen, so we remove it from the DOM.
+     */
+    handleTransitionOutComplete: function(event) {
+      var oldContent = event.target;
+      oldContent.removeEventListener('core-transitionend', this.handleTransitionOutComplete);
+      if (oldContent.parentNode) {
+        oldContent.parentNode.removeChild(event.target);
+      }
+    },
+
+    /**
+     * Schedule an attempt to load the next piece of content for this field.
+     *
+     * This uses Polymer's `job` tool so multiple jobs are only fired 1 time.
+     *
+     * @function scheduleNextContent
+     * @param {Number} msToWait Number of milliseconds to wait.
+     */
+    scheduleNextContent: function(msToWait) {
+      this.job('updateFieldContent' + this.fieldId, function() {
+        this.loadNextContent();
+      }, msToWait);
+    },
+  });
+</script>

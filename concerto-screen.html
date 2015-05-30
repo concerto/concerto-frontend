@@ -1,34 +1,27 @@
-<link rel="import" href="bower_components/core-ajax/core-ajax.html">
-
-<link rel="import" href="concerto-field.html">
 <script src="utils.js"></script>
-
-<!--
-The `concerto-screen` element provides the main Concerto screen.
-
-@element concerto-screen
-@status alpha
+<!-- 
+  The `concerto-screen` element provides the main Concerto screen 
 -->
-<polymer-element name="concerto-screen" attributes="screenId baseURL">
+<dom-module id="concerto-screen">
+  <style>
+    :host {
+      display: block;
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .position {
+      position: absolute;
+      overflow: hidden;
+    }
+    .template {
+      width: 100%;
+      height: 100%;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+    }
+  </style>
   <template>
-    <style>
-      :host {
-        display: block;
-        position: relative;
-        width: 100%;
-        height: 100%;
-      }
-      .position {
-        position: absolute;
-        overflow: hidden;
-      }
-      .template {
-        width: 100%;
-        height: 100%;
-        background-size: 100% 100%;
-        background-repeat: no-repeat;
-      }
-    </style>
     <core-ajax id="screenData"
       url="{{baseURL}}/frontend/{{screenId}}/setup.json"
       handleAs="json" auto
@@ -61,85 +54,61 @@ The `concerto-screen` element provides the main Concerto screen.
       on-core-response="{{refreshScreen}}">
     </core-ajax>
   </template>
+</dom-module>
 
-  <script>
-    Polymer({
-      /**
-       * ID of this screen.
-       *
-       * @attribute screenId
-       * @type Number
-       * @default 0
-       */
-      screenId: 0,
+<script>
+  Polymer({
+    is: "concerto-screen",
 
-      /**
-       * Base path to prepend to all URLs.
-       *
-       * @attribute baseURL
-       * @type String
-       * @default ''
-       */
-      baseURL: '',
-
-      /**
-       * Name of this screen.
-       *
-       * @attribute name
-       * @type String
-       * @default ''
-       */
-
-      /**
-       * Template being shown.
-       *
-       * @attribute template
-       * @type Object
-       * @default {}
-       */
-
-      publish: {
-        name: {
-          value: '',
-          reflect: true
-        },
+    properties: {
+      screenId: { 
+        type: Number,
+        value: 0
       },
-
-      created: function (){
-        this.template = {};
+      baseURL: { 
+        type: String,
+        value: ''
       },
-
-      handleScreenData: function(event, response) {
-        var data = response.response;
-        this.name = data.name;
-        this.template = data.template;
-
-        // periodically check screen setup for changes
-        setInterval(this.checkScreenData, 1000, this.$.updateScreenData);
+      name: {
+        type: String,
+        value: ''
       },
+      template: {
+        type: Object,
+        value: {}
+      }
+    },
 
-      checkScreenData: function(ajax) {
-        // get screen setup.json
-        ajax.go();
-      }, 
+    handleScreenData: function(event, response) {
+      var data = response.response;
+      this.name = data.name;
+      this.template = data.template;
 
-      refreshScreen: function(event, response) {
-        // reload screen if changes are found in screen setup
-        var template = this.template;
-        var response = response.response;
+      // periodically check screen setup for changes
+      setInterval(this.checkScreenData, 1000, this.$.updateScreenData);
+    },
 
-        // Check for changes to screen's effective template
-        if (template.name != response.template.name) {
+    checkScreenData: function(ajax) {
+      // get screen setup.json
+      ajax.go();
+    }, 
+
+    refreshScreen: function(event, response) {
+      // reload screen if changes are found in screen setup
+      var template = this.template;
+      var response = response.response;
+
+      // Check for changes to screen's effective template
+      if (template.name != response.template.name) {
+        location.reload();
+      }
+
+      // Check for any changes to positions
+      for (var position in this.template.positions) {
+        if (!(position in response.template.positions)) {
           location.reload();
         }
-
-        // Check for any changes to positions
-        for (var position in this.template.positions) {
-          if (!(position in response.template.positions)) {
-            location.reload();
-          }
-        }
       }
-    });
-  </script>
-</polymer-element>
+    }
+  });
+</script>

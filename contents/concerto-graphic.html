@@ -1,101 +1,104 @@
-<link rel="import" href="concerto-content.html">
 <script src="../utils.js"></script>
-
+<link rel="import" href="concerto-content.html">
 <!--
-The `concerto-graphic` elements provides a large static image.
-
-@element concerto-content
-@status alpha
+  The `concerto-graphic` elements provides a large static image.
 -->
-<polymer-element name="concerto-graphic" attributes="path" constructor="ConcertoGraphic" extends="concerto-content" autoLoad="false">
+<dom-module id="concerto-graphic" >
+  <style>
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+    }
+
+    :host(.core-transition) {
+      overflow: hidden;
+    }
+
+    .portrait {
+      width: 100%;
+    }
+
+    .landscape {
+      height: 100%;
+    }
+
+    img {
+      /** I do not understand this centering voodoo */
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  </style>
+
   <template>
-    <style>
-      :host {
-        display: block;
-        width: 100%;
-        height: 100%;
-        text-align: center;
-      }
-
-      :host(.core-transition) {
-        overflow: hidden;
-      }
-
-      .portrait {
-        width: 100%;
-      }
-
-      .landscape {
-        height: 100%;
-      }
-
-      img {
-        /** I do not understand this centering voodoo */
-        position: relative;
-        top: 50%;
-        transform: translateY(-50%);
-      }
-    </style>
     <img id="graphic" src="{{path | resolveURL(baseURL)}}" />
   </template>
+</dom-module>
 
-  <script>
-    Polymer({
-      /**
-       * Path to the image to render.
-       *
-       * @attribute path
-       * @type String
-       * @default ''
-       */
-      path: '',
+<script>
+  Polymer({
+    is: "concerto-graphic",
 
-      created: function (){
-        this.handleGraphicLoadBound = this.handleGraphicLoad.bind(this);
-      },
+    hostAttributes: {
+      constructor: "ConcertoGraphic",
+      extends: "concerto-content",
+      autoLoad: false
+    }
 
-      /**
-       * Listen to the `load` event of the image being displayed to determine
-       * when to call `loaded`.
-       */
-      ready: function() {
-        this.$.graphic.addEventListener('load', this.handleGraphicLoadBound);
-      },
+    properties: {
+      path: {
+        type: String,
+        value: ''
+      }
+    }
 
-      /**
-       * Handle the event fired when the graphic has finished loading.
-       */
-      handleGraphicLoad: function() {
-        this.$.graphic.removeEventListener('load', this.handleGraphicLoadBound);
-        this.loaded();
-        this.resize();
-      },
+    created: function (){
+      this.handleGraphicLoadBound = this.handleGraphicLoad.bind(this);
+    },
 
-      /**
-       * Resize the image to use portrait or landscape mode to fill the space.
-       */
-      resize: function() {
-        var containerRatio = this.offsetWidth / this.offsetHeight;
-        if (!containerRatio) {
-          // Maybe the container is broken or doesn't have a width;
-          return;
-        }
+    /**
+     * Listen to the `load` event of the image being displayed to determine
+     * when to call `loaded`.
+     */
+    ready: function() {
+      this.$.graphic.addEventListener('load', this.handleGraphicLoadBound);
+    },
 
-        var imgRatio = this.$.graphic.naturalWidth / this.$.graphic.naturalHeight;
+    /**
+     * Handle the event fired when the graphic has finished loading.
+     */
+    handleGraphicLoad: function() {
+      this.$.graphic.removeEventListener('load', this.handleGraphicLoadBound);
+      this.loaded();
+      this.resize();
+    },
 
-        this.$.graphic.classList.toggle('portrait', (imgRatio >= containerRatio));
-        this.$.graphic.classList.toggle('landscape', (imgRatio <= containerRatio));
-       },
+    /**
+     * Resize the image to use portrait or landscape mode to fill the space.
+     */
+    resize: function() {
+      var containerRatio = this.offsetWidth / this.offsetHeight;
+      if (!containerRatio) {
+        // Maybe the container is broken or doesn't have a width;
+        return;
+      }
 
-       /**
-        * Apply the styling information to the <img> tag, not the container.
-        */
-       cssTextChanged: function() {
-         this.$.graphic.style.cssText = this.cssText;
-       },
-    });
-  </script>
-</polymer-element>
+      var imgRatio = this.$.graphic.naturalWidth / this.$.graphic.naturalHeight;
+
+      this.$.graphic.classList.toggle('portrait', (imgRatio >= containerRatio));
+      this.$.graphic.classList.toggle('landscape', (imgRatio <= containerRatio));
+     },
+
+     /**
+      * Apply the styling information to the <img> tag, not the container.
+      */
+     cssTextChanged: function() {
+       this.$.graphic.style.cssText = this.cssText;
+     },
+  });
+</script>
 <script> 
   registerContentType("concerto-graphic", "ConcertoGraphic");
 </script>
