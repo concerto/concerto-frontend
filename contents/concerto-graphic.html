@@ -1,9 +1,7 @@
-<script src="../utils.js"></script>
-<link rel="import" href="concerto-content.html">
 <!--
   The `concerto-graphic` elements provides a large static image.
 -->
-<dom-module id="concerto-graphic" >
+<dom-module id="concerto-graphic">
   <style>
     :host {
       display: block;
@@ -35,70 +33,70 @@
   <template>
     <img id="graphic" src="{{path | resolveURL(baseURL)}}" />
   </template>
+
+  <script>
+    Polymer({
+      is: "concerto-graphic",
+
+      hostAttributes: {
+        constructor: "ConcertoGraphic",
+        autoLoad: false
+      },
+
+      properties: {
+        path: {
+          type: String,
+          value: ''
+        }
+      },
+
+      created: function (){
+        this.handleGraphicLoadBound = this.handleGraphicLoad.bind(this);
+      },
+
+      /**
+       * Listen to the `load` event of the image being displayed to determine
+       * when to call `loaded`.
+       */
+      ready: function() {
+        this.$.graphic.addEventListener('load', this.handleGraphicLoadBound);
+      },
+
+      /**
+       * Handle the event fired when the graphic has finished loading.
+       */
+      handleGraphicLoad: function() {
+        this.$.graphic.removeEventListener('load', this.handleGraphicLoadBound);
+        this.loaded();
+        this.resize();
+      },
+
+      /**
+       * Resize the image to use portrait or landscape mode to fill the space.
+       */
+      resize: function() {
+        var containerRatio = this.offsetWidth / this.offsetHeight;
+        if (!containerRatio) {
+          // Maybe the container is broken or doesn't have a width;
+          return;
+        }
+
+        var imgRatio = this.$.graphic.naturalWidth / this.$.graphic.naturalHeight;
+
+        this.$.graphic.classList.toggle('portrait', (imgRatio >= containerRatio));
+        this.$.graphic.classList.toggle('landscape', (imgRatio <= containerRatio));
+       },
+
+       /**
+        * Apply the styling information to the <img> tag, not the container.
+        */
+       cssTextChanged: function() {
+         this.$.graphic.style.cssText = this.cssText;
+       }
+    });
+  </script>
 </dom-module>
 
-<script>
-  Polymer({
-    is: "concerto-graphic",
-
-    hostAttributes: {
-      constructor: "ConcertoGraphic",
-      extends: "concerto-content",
-      autoLoad: false
-    }
-
-    properties: {
-      path: {
-        type: String,
-        value: ''
-      }
-    }
-
-    created: function (){
-      this.handleGraphicLoadBound = this.handleGraphicLoad.bind(this);
-    },
-
-    /**
-     * Listen to the `load` event of the image being displayed to determine
-     * when to call `loaded`.
-     */
-    ready: function() {
-      this.$.graphic.addEventListener('load', this.handleGraphicLoadBound);
-    },
-
-    /**
-     * Handle the event fired when the graphic has finished loading.
-     */
-    handleGraphicLoad: function() {
-      this.$.graphic.removeEventListener('load', this.handleGraphicLoadBound);
-      this.loaded();
-      this.resize();
-    },
-
-    /**
-     * Resize the image to use portrait or landscape mode to fill the space.
-     */
-    resize: function() {
-      var containerRatio = this.offsetWidth / this.offsetHeight;
-      if (!containerRatio) {
-        // Maybe the container is broken or doesn't have a width;
-        return;
-      }
-
-      var imgRatio = this.$.graphic.naturalWidth / this.$.graphic.naturalHeight;
-
-      this.$.graphic.classList.toggle('portrait', (imgRatio >= containerRatio));
-      this.$.graphic.classList.toggle('landscape', (imgRatio <= containerRatio));
-     },
-
-     /**
-      * Apply the styling information to the <img> tag, not the container.
-      */
-     cssTextChanged: function() {
-       this.$.graphic.style.cssText = this.cssText;
-     },
-  });
-</script>
 <script> 
   registerContentType("concerto-graphic", "ConcertoGraphic");
 </script>

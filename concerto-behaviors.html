@@ -1,0 +1,191 @@
+<script>
+  var ConcertoBehaviors = ConcertoBehaviors || {};
+
+  ConcertoBehaviors.Utils = {
+    /**
+     * Prepend a base path to a URL as needed.
+     *
+     * If a base is supplied and the URL is not absolute, prepend the base to
+     * return an absolute URL.
+     */
+    resolveURL: function(url, base) {
+      var r = new RegExp('^(?:[a-z]+:)?//', 'i');
+      if (!url || !base || r.test(url)) {
+        return url;
+      }
+      return base + url;
+    },
+
+    /**
+     * Use iterative binary search to find optimal content font size given 
+     * the element's dimensions as constraints.
+     */
+    optimalFontSize: function(element, content) {
+      // Font size and container constraints
+      var maxSize = 200;
+      var minSize = 4;
+      var maxWidth = element.parentNode.offsetWidth;
+      var maxHeight = element.parentNode.offsetHeight;
+
+      // Binary search to find optimal font size
+      while (maxSize > minSize + 1) {
+        // calculate mid point of max and min font sizes
+        midSize = Math.floor((maxSize - minSize) / 2) + minSize;
+        // set content node font size to mid point
+        content.style.fontSize = midSize + "px";
+
+        // check if content node exceeds height constraint
+        if (!(content.offsetHeight <= maxHeight && content.offsetWidth <= maxWidth)) {
+          // continue search on smaller font sizes
+          maxSize = midSize;
+        } else {
+          // continue search on larger font sizes
+          minSize = midSize;
+        }
+      }
+
+      // Set final font size 
+      content.style.fontSize = minSize + "px";
+    }
+  };
+
+  ConcertoBehaviors.contentFactory = {
+
+    properties: {
+      types: {
+        type: Object,
+        value: {}
+      }
+    },
+
+    /**
+     *  Normalize the type names for consistent registration / lookup.
+     *  We use a lower case non-punctuated string because some content types are
+     *  CamelCase on the server but Regularcase in JavaScript (like HtmlText).
+     */
+    normalizeTypeName: function(typeName) {
+      var basicName =  typeName.replace(/\W/g, '');
+      return basicName.toLowerCase();
+    },
+      
+    /**
+     * Initialize a new content element.
+     */
+    getType: function (typeName) {
+      typeName = normalizeTypeName(typeName);
+      return (this.types[typeName] ? new this.types[typeName]() : undefined);
+    },
+
+    /**
+     * Register a content element class with a type.
+     */
+    registerType: function (typeName, ContentType) {
+      if (!ContentType) {
+        // Do not register content types which do not have a public constructor.
+        return;
+      }
+      var proto = ContentType.prototype;
+      if ('contentId' in proto && 'title' in proto) {
+        typeName = normalizeTypeName(typeName);
+        this.types[typeName] = ContentType;
+      }
+    }
+  };
+
+  ConcertoBehaviors.baseContent = {
+    properties: {
+      contentId: {
+        type: Number,
+        value: 0
+      },
+      title: {
+        type: String,
+        value: ''
+      },
+      duration: {
+        type: Number,
+        value: 0
+      },
+      autoLoad: {
+        type: Boolean,
+        value: true
+      },
+      cssText: {
+        type: String,
+        value: ''
+      },
+      baseURL: {
+        type: String,
+        value: ''
+      }
+    },
+
+    /**
+     * When the dom is ready, call `loaded` to say everything has loaded.
+     */
+    domReady: function() {
+      if (this.autoLoad) {
+        this.loaded();
+      }
+    },
+
+    /**
+     * Indicate that this content has finished loaded and can be displayed
+     * in the field.
+     *
+     * Currently this involves firing the `load` event, but the details may
+     * change.
+     */
+    loaded: function() {
+      this.fire('load', this);
+    },
+
+    /**
+     * Load the values from a JSON Map which map to attributes
+     * of this element.
+     */
+    fromJSON: function(data) {
+      Object.keys(data).forEach(function(key) {
+        if (key in this) {
+          if (typeof data[key] == 'object') {
+            this.setAttribute(key, JSON.stringify(data[key]));
+          } else {
+            this.setAttribute(key, data[key]);
+          }
+        }
+      }.bind(this));
+      if (this.autoLoad) {
+        this.loaded();
+      }
+    },
+
+    /**
+     * Apply the new cssText back to the element.
+     *
+     * Different content types should override this method to set the styl on
+     * a more appropriate DOM element.
+     */
+    cssTextChanged: function() {
+      this.style.cssText = this.cssText;
+    },
+
+    /**
+     * Register the content type described by the current page in the
+     * ContentFactory.
+     *
+     * This method should be called from each piece of content which inherits from
+     * concerto-content. It attempts to automatically determine what Polymer
+     * element is being defined and setup an event listener to register it once
+     * Polymer has finished loading all elements.
+     */
+    registerContentType: function(contentName, klass){
+      window.addEventListener('WebComponentsReady', function(){
+        if (concerto && concerto.contentFactory) {
+          // concerto-ticker should be known as ticker.
+          var name = contentName.replace(/^concerto-/, '');
+          concerto.contentFactory.registerType(name, window[klass]);
+        }
+      });
+    }
+  };
+</script>

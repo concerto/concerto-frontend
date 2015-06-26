@@ -1,37 +1,41 @@
-<link rel="import" href="concerto-content.html">
-
 <!--
-The `concerto-htmltext` elements provides a static div displaying HTML.
-
-@element concerto-content
-@status alpha
+  The `concerto-htmltext` elements provides a static div displaying HTML.
 -->
-<polymer-element name="concerto-htmltext" attributes="data" constructor="ConcertoHtmlText" extends="concerto-content">
+<dom-module id="concerto-htmltext">
+  <style>
+    #htmltext * {
+      margin: 0;
+    }
+  </style>
+
   <template>
-    <style>
-      #htmltext * {
-        margin: 0;
-      }
-    </style>
     <div id="htmltext" class="htmltext"></div>
   </template>
 
   <script>
     Polymer({
-      /**
-       * HTML that goes in the div.
-       *
-       * @attribute data
-       * @type String
-       * @default ''
-       */
-       data: '',
+      is: "concerto-htmltext",
+
+      hostAttributes: {
+        constructor: "ConcertoHtmlText"
+      },
+
+      properties: {
+        data: {
+          type: String,
+          value: ''
+        },
+        config: {
+          type: Object,
+          value: {}
+        }
+      },
 
       /**
        * When the dom is ready, find optimal font size
        */
        domReady: function() {
-         PolymerExpressions.prototype.optimalFontSize(this, this.$.htmltext);
+         Polymer.Base.optimalFontSize(this, this.$.htmltext);
        },
 
        /**

@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": false,
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.0.0"
+    "polymer": "Polymer/polymer#^1.0.0",
+    "iron-ajax": "PolymerElements/iron-ajax#1.0.0"
   },
   "resolutions": {
     "polymer": "^1.0.0",

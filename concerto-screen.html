@@ -1,8 +1,8 @@
-<script src="utils.js"></script>
 <!-- 
   The `concerto-screen` element provides the main Concerto screen 
 -->
 <dom-module id="concerto-screen">
+
   <style>
     :host {
       display: block;
@@ -21,16 +21,24 @@
       background-repeat: no-repeat;
     }
   </style>
+
   <template>
-    <core-ajax id="screenData"
-      url="{{baseURL}}/frontend/{{screenId}}/setup.json"
-      handleAs="json" auto
-      on-core-response="{{handleScreenData}}">
-    </core-ajax>
-    <template bind if="{{template.id}}">
+    <iron-ajax 
+      id="screenData"
+      url="test/testdata/frontend/1/setup.json"
+      handle-as="json"
+      on-response="handleScreenData">
+    </iron-ajax>
+    <iron-ajax
+      id="updateScreenData"
+      url="test/testdata/frontend/1/setup.json"
+      handle-as="json"
+      on-response="refreshScreen">
+    </iron-ajax>
+    <template is="dom-if" if="{{template.id}}">
       <div id="template_{{template.id}}" class="template"
-        style="background-image: url('{{template.path | resolveURL(baseURL)}}');">
-        <template repeat="{{position in template.positions}}">
+        style$="{{backgroundImage(template.path)}}">
+        <template is="dom-repeat" items="{{template.positions}}" as="position">
           <div class="position" id="position_{{position.id}}"
             style="left: {{position.left * 100}}%;
                    top: {{position.top * 100}}%;
@@ -47,68 +55,63 @@
         </template>
       </div>
     </template>
-    <!-- ajax request for changes to screen setup -->
-    <core-ajax id="updateScreenData"
-      url="{{baseURL}}/frontend/{{screenId}}/setup.json"
-      handleAs="json"
-      on-core-response="{{refreshScreen}}">
-    </core-ajax>
   </template>
-</dom-module>
 
-<script>
-  Polymer({
-    is: "concerto-screen",
+  <script>
+    Polymer({
+      is: "concerto-screen",
 
-    properties: {
-      screenId: { 
-        type: Number,
-        value: 0
+      behaviors: [ConcertoBehaviors.Utils],
+
+      properties: {
+        screenId: Number,
+        baseUrl: String,
+        name: String,
+        template: Object
       },
-      baseURL: { 
-        type: String,
-        value: ''
+
+      ready: function() {
+        /* get intial screen data and check for changes periodically */
+        this.$.screenData.generateRequest();
+        setInterval(this.checkScreenData, 15000, this.$.updateScreenData);
       },
-      name: {
-        type: String,
-        value: ''
+
+      backgroundImage: function(path) {
+        /* background-image style for annotated attribute binding */
+        var url = this.resolveURL(path, this.baseUrl);
+        return "background-image: url('" + url + "');";
       },
-      template: {
-        type: Object,
-        value: {}
-      }
-    },
 
-    handleScreenData: function(event, response) {
-      var data = response.response;
-      this.name = data.name;
-      this.template = data.template;
+      handleScreenData: function(event, response) {
+        /* set screen setup properties */
+        var data = response.response;
+        this.name = data.name;
+        this.template = data.template;
+      },
 
-      // periodically check screen setup for changes
-      setInterval(this.checkScreenData, 1000, this.$.updateScreenData);
-    },
+      checkScreenData: function(ajax) {
+        /* check for changes to screen setup */
+        ajax.generateRequest();
+      },
 
-    checkScreenData: function(ajax) {
-      // get screen setup.json
-      ajax.go();
-    }, 
+      refreshScreen: function(event, response) {
+        /* reload screen if changes are found in screen setup */
+        var template = this.template;
+        var response = response.response;
 
-    refreshScreen: function(event, response) {
-      // reload screen if changes are found in screen setup
-      var template = this.template;
-      var response = response.response;
-
-      // Check for changes to screen's effective template
-      if (template.name != response.template.name) {
-        location.reload();
-      }
-
-      // Check for any changes to positions
-      for (var position in this.template.positions) {
-        if (!(position in response.template.positions)) {
+        /* Check for changes to screen's effective template */
+        if (template.name != response.template.name) {
           location.reload();
         }
+
+        /* Check for any changes to positions */
+        for (var position in this.template.positions) {
+          if (!(position in response.template.positions)) {
+            location.reload();
+          }
+        }
       }
-    }
-  });
-</script>
+    });
+  </script>
+
+</dom-module>
