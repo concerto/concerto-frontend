@@ -21,42 +21,39 @@
      * the element's dimensions as constraints.
      */
     optimalFontSize: function(element, content) {
-      // Font size and container constraints
-      var maxSize = 200;
-      var minSize = 4;
-      var maxWidth = element.parentNode.offsetWidth;
-      var maxHeight = element.parentNode.offsetHeight;
+      if (element.parentNode) {
+        // Font size and container constraints
+        var maxSize = 200;
+        var minSize = 4;
+        var maxWidth = element.parentNode.offsetWidth;
+        var maxHeight = element.parentNode.offsetHeight;
 
-      // Binary search to find optimal font size
-      while (maxSize > minSize + 1) {
-        // calculate mid point of max and min font sizes
-        midSize = Math.floor((maxSize - minSize) / 2) + minSize;
-        // set content node font size to mid point
-        content.style.fontSize = midSize + "px";
+        // Binary search to find optimal font size
+        while (maxSize > minSize + 1) {
+          // calculate mid point of max and min font sizes
+          midSize = Math.floor((maxSize - minSize) / 2) + minSize;
+          // set content node font size to mid point
+          content.style.fontSize = midSize + "px";
 
-        // check if content node exceeds height constraint
-        if (!(content.offsetHeight <= maxHeight && content.offsetWidth <= maxWidth)) {
-          // continue search on smaller font sizes
-          maxSize = midSize;
-        } else {
-          // continue search on larger font sizes
-          minSize = midSize;
+          // check if content node exceeds height constraint
+          if (!(content.offsetHeight <= maxHeight && content.offsetWidth <= maxWidth)) {
+            // continue search on smaller font sizes
+            maxSize = midSize;
+          } else {
+            // continue search on larger font sizes
+            minSize = midSize;
+          }
         }
-      }
 
-      // Set final font size 
-      content.style.fontSize = minSize + "px";
+        // Set final font size 
+        content.style.fontSize = minSize + "px";
+      }
     }
   };
 
-  ConcertoBehaviors.contentFactory = {
+  ConcertoBehaviors.ContentFactory = {
 
-    properties: {
-      types: {
-        type: Object,
-        value: {}
-      }
-    },
+    types: {},
 
     /**
      *  Normalize the type names for consistent registration / lookup.
@@ -72,58 +69,48 @@
      * Initialize a new content element.
      */
     getType: function (typeName) {
-      typeName = normalizeTypeName(typeName);
-      return (this.types[typeName] ? new this.types[typeName]() : undefined);
+      typeName = this.normalizeTypeName(typeName);
+      return this.types[typeName] ? new this.types[typeName] : undefined;
     },
 
     /**
-     * Register a content element class with a type.
+     * Register the content type described by the current page in the
+     * ContentFactory.
+     *
+     * This method should be called from each piece of content which inherits from
+     * concerto-content. It attempts to automatically determine what Polymer
+     * element is being defined and setup an event listener to register it once
+     * Polymer has finished loading all elements.
+     *
+     * Registers a content element class with a type.
      */
-    registerType: function (typeName, ContentType) {
-      if (!ContentType) {
+    registerContent: function(contentName, klass) {
+      var name = contentName.replace(/^concerto-/, '');
+      var content = window[klass];
+      if (!content) {
         // Do not register content types which do not have a public constructor.
         return;
       }
-      var proto = ContentType.prototype;
-      if ('contentId' in proto && 'title' in proto) {
-        typeName = normalizeTypeName(typeName);
-        this.types[typeName] = ContentType;
-      }
+      var proto = content.prototype;
+      name = this.normalizeTypeName(name);
+      this.types[name] = content;
     }
   };
 
-  ConcertoBehaviors.baseContent = {
+  ConcertoBehaviors.BaseContent = {
     properties: {
-      contentId: {
-        type: Number,
-        value: 0
-      },
-      title: {
-        type: String,
-        value: ''
-      },
-      duration: {
-        type: Number,
-        value: 0
-      },
-      autoLoad: {
-        type: Boolean,
-        value: true
-      },
-      cssText: {
-        type: String,
-        value: ''
-      },
-      baseURL: {
-        type: String,
-        value: ''
-      }
+      contentId: Number,
+      title: String,
+      duration: Number,
+      autoLoad: Boolean,
+      cssText: String,
+      baseURL: String
     },
 
     /**
      * When the dom is ready, call `loaded` to say everything has loaded.
      */
-    domReady: function() {
+    ready: function() {
       if (this.autoLoad) {
         this.loaded();
       }
@@ -167,25 +154,6 @@
      */
     cssTextChanged: function() {
       this.style.cssText = this.cssText;
-    },
-
-    /**
-     * Register the content type described by the current page in the
-     * ContentFactory.
-     *
-     * This method should be called from each piece of content which inherits from
-     * concerto-content. It attempts to automatically determine what Polymer
-     * element is being defined and setup an event listener to register it once
-     * Polymer has finished loading all elements.
-     */
-    registerContentType: function(contentName, klass){
-      window.addEventListener('WebComponentsReady', function(){
-        if (concerto && concerto.contentFactory) {
-          // concerto-ticker should be known as ticker.
-          var name = contentName.replace(/^concerto-/, '');
-          concerto.contentFactory.registerType(name, window[klass]);
-        }
-      });
     }
   };
 </script>

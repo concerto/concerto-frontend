@@ -13,7 +13,7 @@
   </template>
 
   <script>
-    Polymer({
+    ConcertoHtmlText = Polymer({
       is: "concerto-htmltext",
 
       hostAttributes: {
@@ -52,5 +52,5 @@
   </script>
 </polymer-element>
 <script>
-  registerContentType("concerto-htmltext", "ConcertoHtmlText");
+  ConcertoBehaviors.ContentFactory.registerContent("concerto-htmltext", "ConcertoHtmlText");
 </script>

@@ -35,7 +35,7 @@
   </template>
 
   <script>
-    Polymer({
+    ConcertoGraphic = Polymer({
       is: "concerto-graphic",
 
       hostAttributes: {
@@ -98,5 +98,5 @@
 </dom-module>
 
 <script> 
-  registerContentType("concerto-graphic", "ConcertoGraphic");
+  ConcertoBehaviors.ContentFactory.registerContent("concerto-graphic", "ConcertoGraphic");
 </script>

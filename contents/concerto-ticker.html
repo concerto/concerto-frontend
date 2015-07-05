@@ -13,29 +13,25 @@
   </template>
 
   <script>
-    Polymer({
+    ConcertoTicker = Polymer({
       is: "concerto-ticker",
+
+      behaviors: [ConcertoBehaviors.BaseContent, ConcertoBehaviors.Utils],
 
       hostAttributes: {
         constructor: "ConcertoTicker"
       },
 
       properties: {
-        data: {
-          type: String,
-          value: ''
-        },
-        config: {
-          type: Object,
-          value: {}
-        }
+        data: String,
+        config: Object
       },
 
       /**
        * When the dom is ready, find optimal font size
        */
-       domReady: function() {
-         Polymer.Base.optimalFontSize(this, this.$.ticker);
+       ready: function() {
+         this.optimalFontSize(this, this.$.ticker);
        },
 
        /**
@@ -47,10 +43,10 @@
         */
        dataChanged: function() {
          this.$.ticker.innerHTML = this.data;
-       },
+       }
     });
   </script>
 </dom-module>
 <script>
-  registerContentType("concerto-ticker", "ConcertoTicker");
+  ConcertoBehaviors.ContentFactory.registerContent("concerto-ticker", "ConcertoTicker");
 </script>

@@ -20,7 +20,6 @@
   <template>
     <iron-ajax 
       id="contentsData"
-      url="{{baseURL}}/frontend/{{screenId}}/fields/{{fieldId}}/contents.json"
       handle-as="json"
       on-response="handleContents"
       on-error="handleContentsError">
@@ -32,11 +31,13 @@
     Polymer({
       is: "concerto-field",
 
+      behaviors: [ConcertoBehaviors.ContentFactory],
+
       properties: {
         screenId: Number,
         fieldId: Number,
-        fieldName: String, 
-        baseURL: String,
+        fieldName: String,
+        baseUrl: String,
         contentStyle: {
           type: String,
           value: ""
@@ -53,10 +54,6 @@
           type: Array,
           value: []
         },
-        transition: {
-          type: Object,
-          value: undefined
-        },
         optConfig: {
           type: Object,
           value: {}
@@ -67,7 +64,9 @@
         this.handleContentLoadedBound = this.handleContentLoaded.bind(this);
       },
 
-      domReady: function(){
+      ready: function(){
+        var contents = this.baseUrl + "/frontend/" + this.screenId + "/fields/" + this.fieldId + "/contents.json";
+        this.$.contentsData.url = contents;
         this.loadNextContent();
       },
 
@@ -183,22 +182,22 @@
           config: this.optConfig
         };
 
+        console.log(contentData.type);
+
         // Flatten render_details
         Object.keys(contentData.render_details).forEach(function(key) {
           simpleContentData[key] = contentData.render_details[key];
         });
 
         var contentType = contentData.type;
-        var content = concerto.contentFactory.getType(contentType);
+        var content = ConcertoBehaviors.ContentFactory.getType(contentType);
         if (!content) {
           console.log('No content type registered for ' + contentType);
           return false;
         }
-        content.baseURL = this.baseURL;
+        content.baseUrl = this.baseUrl;
         content.cssText = this.contentStyle;
-        // Setup the listeners before loading the data.
-        content.addEventListener('load', this.handleContentLoadedBound);
-        content.fromJSON(simpleContentData);
+        //content.addEventListener('load', this.handleContentLoadedBound);
         return true;
       },
 
@@ -225,11 +224,6 @@
         if (this.currentContent != content) {
           content.style.zIndex = "100";
           if (this.currentContent) {
-            // If there is current content, transition it out.
-            this.transition.setup(this.currentContent);
-            this.currentContent.addEventListener('core-transitionend', this.handleTransitionOutComplete);
-            this.transition.go(this.currentContent, {opened: false});
-
             // Assign a zIndex for the new content > current content.
             var zIndex = parseInt(this.currentContent.style.zIndex);
             if (zIndex < 2147483647) {
@@ -238,39 +232,20 @@
               content.style.zIndex = zIndex + 1;
             }
           }
-          // Transition the new content in.
-          this.transition.setup(content);
           this.$.content.appendChild(content);
-          this.transition.go(content, {opened: true});
-
           this.currentContent = content;
         }
         this.scheduleNextContent(content.duration * 1000);
       },
 
       /**
-       * Handle the finished transition away from this content.
-       *
-       * At this point the content is no longer being shown in the screen, so we remove it from the DOM.
-       */
-      handleTransitionOutComplete: function(event) {
-        var oldContent = event.target;
-        oldContent.removeEventListener('core-transitionend', this.handleTransitionOutComplete);
-        if (oldContent.parentNode) {
-          oldContent.parentNode.removeChild(event.target);
-        }
-      },
-
-      /**
        * Schedule an attempt to load the next piece of content for this field.
-       *
-       * This uses Polymer's `job` tool so multiple jobs are only fired 1 time.
        *
        * @function scheduleNextContent
        * @param {Number} msToWait Number of milliseconds to wait.
        */
       scheduleNextContent: function(msToWait) {
-        this.job('updateFieldContent' + this.fieldId, function() {
+        this.debounce('updateFieldContent' + this.fieldId, function() {
           this.loadNextContent();
         }, msToWait);
       }

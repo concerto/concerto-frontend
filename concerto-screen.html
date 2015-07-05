@@ -23,33 +23,30 @@
   </style>
 
   <template>
+    <!-- Screen setup requests -->
     <iron-ajax 
-      id="screenData"
-      url="test/testdata/frontend/1/setup.json"
+      id="initScreenData" 
       handle-as="json"
       on-response="handleScreenData">
     </iron-ajax>
     <iron-ajax
       id="updateScreenData"
-      url="test/testdata/frontend/1/setup.json"
       handle-as="json"
-      on-response="refreshScreen">
+      on-response="setupChanged">
     </iron-ajax>
+    <!-- Create template background, positions, and fields -->
     <template is="dom-if" if="{{template.id}}">
-      <div id="template_{{template.id}}" class="template"
+      <div id="{{templateId(template.id)}}" class="template"
         style$="{{backgroundImage(template.path)}}">
         <template is="dom-repeat" items="{{template.positions}}" as="position">
-          <div class="position" id="position_{{position.id}}"
-            style="left: {{position.left * 100}}%;
-                   top: {{position.top * 100}}%;
-                   width: {{(position.right - position.left) * 100}}%;
-                   height: {{(position.bottom - position.top) * 100}}%;">
-            <concerto-field screenId="{{screenId}}"
-              fieldId="{{position.field.id}}"
-              fieldName="{{position.field.name}}"
-              baseURL="{{baseURL}}"
-              contentStyle="{{position.style}}"
-              optConfig="{{position.field.config}}">
+          <div class="position" id="{{positionId(position.id)}}"
+            style$="{{computeFieldPosition(position)}}">
+            <concerto-field screen-id="{{screenId}}"
+              field-id="{{position.field.id}}"
+              field-name="{{position.field.name}}"
+              base-url="{{baseUrl}}"
+              content-style="{{position.style}}"
+              opt-config="{{position.field.config}}">
             </concerto-field>
           </div>
         </template>
@@ -72,14 +69,36 @@
 
       ready: function() {
         /* get intial screen data and check for changes periodically */
-        this.$.screenData.generateRequest();
-        setInterval(this.checkScreenData, 15000, this.$.updateScreenData);
+        var setup = this.baseUrl + "/frontend/" + this.screenId + "/setup.json";
+        this.$.initScreenData.url = setup;
+        this.$.updateScreenData.url = setup;
+        this.updateScreenData(this.$.initScreenData);
+        setInterval(this.updateScreenData, 1000, this.$.updateScreenData);
+      },
+
+      templateId: function(id) {
+        return "template_" + id;
+      },  
+
+      positionId: function(id) {
+        return "position_" + id;
       },
 
       backgroundImage: function(path) {
         /* background-image style for annotated attribute binding */
         var url = this.resolveURL(path, this.baseUrl);
         return "background-image: url('" + url + "');";
+      },
+
+      computeFieldPosition: function(position) {
+        return "left: " + position.left * 100 + "%; " +
+               "top: " + position.top * 100 + "%; " + 
+               "width: " + (position.right - position.left) * 100 + "%; " + 
+               "height: " + (position.bottom - position.top) * 100 + "%;";
+      },
+
+      updateScreenData: function(ajax) {
+        ajax.generateRequest();
       },
 
       handleScreenData: function(event, response) {
@@ -89,12 +108,7 @@
         this.template = data.template;
       },
 
-      checkScreenData: function(ajax) {
-        /* check for changes to screen setup */
-        ajax.generateRequest();
-      },
-
-      refreshScreen: function(event, response) {
+      setupChanged: function(event, response) {
         /* reload screen if changes are found in screen setup */
         var template = this.template;
         var response = response.response;

@@ -13,22 +13,19 @@
   </template>
 
   <script>
-    Polymer({
+    ConcertoClientTime = Polymer({
       is: "concerto-client-time",
+
+      behaviors: [ConcertoBehaviors.Utils, 
+                  ConcertoBehaviors.BaseContent],
 
       hostAttributes: {
         constructor: "ConcertoClientTime"
       },
 
       properties: {
-        dateObj: {
-          type: Object,
-          value: null
-        },
-        config: {
-          type: Object,
-          value: {}
-        }
+        dateObj: Object,
+        config: Object
       },
 
       /**
@@ -73,6 +70,7 @@
     });
   </script>
 </dom-module>
-<script>
-  registerContentType("concerto-client-time", "ConcertoClientTime");
+
+<script> 
+  ConcertoBehaviors.ContentFactory.registerContent("concerto-client-time", "ConcertoClientTime");
 </script>
