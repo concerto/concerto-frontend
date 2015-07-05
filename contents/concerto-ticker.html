@@ -16,11 +16,8 @@
     ConcertoTicker = Polymer({
       is: "concerto-ticker",
 
-      behaviors: [ConcertoBehaviors.BaseContent, ConcertoBehaviors.Utils],
-
-      hostAttributes: {
-        constructor: "ConcertoTicker"
-      },
+      behaviors: [ConcertoBehaviors.BaseContent, 
+                  ConcertoBehaviors.Utils],
 
       properties: {
         data: String,

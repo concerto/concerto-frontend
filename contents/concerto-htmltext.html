@@ -16,9 +16,8 @@
     ConcertoHtmlText = Polymer({
       is: "concerto-htmltext",
 
-      hostAttributes: {
-        constructor: "ConcertoHtmlText"
-      },
+      behaviors: [ConcertoBehaviors.BaseContent, 
+                  ConcertoBehaviors.Utils],
 
       properties: {
         data: {
@@ -35,7 +34,7 @@
        * When the dom is ready, find optimal font size
        */
        domReady: function() {
-         Polymer.Base.optimalFontSize(this, this.$.htmltext);
+         this.optimalFontSize(this, this.$.htmltext);
        },
 
        /**

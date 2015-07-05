@@ -16,12 +16,8 @@
     ConcertoClientTime = Polymer({
       is: "concerto-client-time",
 
-      behaviors: [ConcertoBehaviors.Utils, 
-                  ConcertoBehaviors.BaseContent],
-
-      hostAttributes: {
-        constructor: "ConcertoClientTime"
-      },
+      behaviors: [ConcertoBehaviors.BaseContent, 
+                  ConcertoBehaviors.Utils],
 
       properties: {
         dateObj: Object,
@@ -38,7 +34,7 @@
         var time = this.prepareTime();
         this.$.clientTime.innerHTML = "<p>" + date + "<br />" + time + "</p>"
         /* Adjust font to largest size possible that fits in time field */
-        Polymer.Base.optimalFontSize(this, this.$.clientTime);
+        this.optimalFontSize(this, this.$.clientTime);
       },
 
       /**

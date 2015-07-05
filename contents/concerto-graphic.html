@@ -38,10 +38,8 @@
     ConcertoGraphic = Polymer({
       is: "concerto-graphic",
 
-      hostAttributes: {
-        constructor: "ConcertoGraphic",
-        autoLoad: false
-      },
+      behaviors: [ConcertoBehaviors.BaseContent,
+                  ConcertoBehaviors.Utils],
 
       properties: {
         path: {
