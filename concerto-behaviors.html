@@ -98,21 +98,58 @@
   };
 
   ConcertoBehaviors.BaseContent = {
+
+    behaviors: [Polymer.NeonAnimationRunnerBehavior],
+
+    listeners: {
+      'neon-animation-finish': '_onNeonAnimationFinish'
+    },
+
     properties: {
-      contentId: Number,
+      baseURL: String,
       title: String,
-      duration: Number,
-      autoLoad: Boolean,
-      cssText: String,
-      baseURL: String
+      contentId: {
+        type: Number,
+        reflectToAttribute: true
+      },
+      duration: {
+        type: Number,
+        reflectToAttribute: true
+      },
+      cssText: {
+        type: String,
+        observer: '_cssTextChanged'
+      },
+      autoLoad: {
+        type: Boolean,
+        value: true
+      },
+      animationConfig: {
+        value: function() {
+          return {
+            'entry': {
+              name: 'fade-in-animation',
+              node: this
+            },
+            'exit': {
+              name: 'fade-out-animation',
+              node: this
+            }
+          }
+        }
+      }
     },
 
     /**
-     * When the dom is ready, call `loaded` to say everything has loaded.
+     * Apply the new cssText back to the element.
      */
-    ready: function() {
-      if (this.autoLoad) {
-        this.loaded();
+    _cssTextChanged: function() {
+      this.style.cssText = this.cssText;
+    },
+
+    _onNeonAnimationFinish: function() {
+      if (!this.opened) {
+        this.style.display = 'none';
       }
     },
 
@@ -123,8 +160,19 @@
      * Currently this involves firing the `load` event, but the details may
      * change.
      */
-    loaded: function() {
+    _loaded: function() {
       this.fire('load', this);
+    },
+
+    fadeIn: function() {
+      this.opened = true;
+      this.style.display = 'inline-block';
+      this.playAnimation('entry');
+    },
+
+    fadeOut: function() {
+      this.opened = false;
+      this.playAnimation('exit');
     },
 
     /**
@@ -135,25 +183,16 @@
       Object.keys(data).forEach(function(key) {
         if (key in this) {
           if (typeof data[key] == 'object') {
-            this.setAttribute(key, JSON.stringify(data[key]));
+            this.setAttribute(key.toLowerCase(), JSON.stringify(data[key]));
           } else {
-            this.setAttribute(key, data[key]);
+            this.setAttribute(key.toLowerCase(), data[key]);
           }
         }
       }.bind(this));
+      
       if (this.autoLoad) {
-        this.loaded();
+        this._loaded();
       }
-    },
-
-    /**
-     * Apply the new cssText back to the element.
-     *
-     * Different content types should override this method to set the styl on
-     * a more appropriate DOM element.
-     */
-    cssTextChanged: function() {
-      this.style.cssText = this.cssText;
     }
   };
 </script>

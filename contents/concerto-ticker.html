@@ -20,7 +20,10 @@
                   ConcertoBehaviors.Utils],
 
       properties: {
-        data: String,
+        data: {
+          type: String,
+          observer: 'dataChanged'
+        },
         config: Object
       },
 
