@@ -41,18 +41,16 @@
         handleContentLoadedBound: Object,
         currentContent: Object,
         contentStyle: String,
+        contentQueue: Array,
         contentErrorCount: {
           type: Number,
           value: 0
-        },
-        contentQueue: {
-          type: Array,
-          value: []
         },
         optConfig: Object
       },
 
       created: function() {
+        this.contentQueue = [];
         this.handleContentLoadedBound = this.handleContentLoaded.bind(this);
       },
 
@@ -166,6 +164,8 @@
           console.log('Missing contentData for field ' + this.fieldId);
           return false;
         }
+
+        console.log(this.contentQueue);
 
         var simpleContentData = {
           title: contentData.name,
