@@ -106,7 +106,10 @@
     },
 
     properties: {
-      baseURL: String,
+      baseUrl: {
+        type: String,
+        reflectToAttribute: true
+      },
       title: String,
       contentId: {
         type: Number,

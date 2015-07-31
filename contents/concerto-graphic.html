@@ -31,7 +31,7 @@
   </style>
 
   <template>
-    <img id="graphic" src="{{path | resolveURL(baseURL)}}" />
+    <img id="graphic" />
   </template>
 
   <script>
@@ -42,10 +42,14 @@
                   ConcertoBehaviors.Utils],
 
       properties: {
-        path: {
-          type: String,
-          value: ''
-        }
+        baseUrl: String,
+        path: String
+      },
+
+      observers: ['graphicSrc(baseUrl, path)'],
+
+      graphicSrc: function(baseUrl, path) {
+        this.$.graphic.src = baseUrl + path;
       },
 
       created: function (){
@@ -65,7 +69,7 @@
        */
       handleGraphicLoad: function() {
         this.$.graphic.removeEventListener('load', this.handleGraphicLoadBound);
-        this.loaded();
+        this._loaded();
         this.resize();
       },
 
