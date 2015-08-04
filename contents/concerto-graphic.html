@@ -5,13 +5,10 @@
   <style>
     :host {
       display: block;
+      position: absolute;
       width: 100%;
       height: 100%;
       text-align: center;
-    }
-
-    :host(.core-transition) {
-      overflow: hidden;
     }
 
     .portrait {
@@ -43,12 +40,23 @@
 
       properties: {
         baseUrl: String,
-        path: String
+        path: String,
+        cssText: {
+          type: String,
+          observer: '_cssTextChanged'
+        }
       },
 
-      observers: ['graphicSrc(baseUrl, path)'],
+      observers: ['_graphicSrc(baseUrl, path)'],
 
-      graphicSrc: function(baseUrl, path) {
+      /**
+        * Apply the styling information to the <img> tag, not the container.
+        */
+      _cssTextChanged: function() {
+        this.$.graphic.style.cssText = this.cssText;
+      },
+
+      _graphicSrc: function(baseUrl, path) {
         this.$.graphic.src = baseUrl + path;
       },
 
@@ -79,7 +87,7 @@
       resize: function() {
         var containerRatio = this.offsetWidth / this.offsetHeight;
         if (!containerRatio) {
-          // Maybe the container is broken or doesn't have a width;
+          // Maybe the container is broken or doesn't have a width
           return;
         }
 
@@ -87,18 +95,10 @@
 
         this.$.graphic.classList.toggle('portrait', (imgRatio >= containerRatio));
         this.$.graphic.classList.toggle('landscape', (imgRatio <= containerRatio));
-       },
-
-       /**
-        * Apply the styling information to the <img> tag, not the container.
-        */
-       cssTextChanged: function() {
-         this.$.graphic.style.cssText = this.cssText;
-       }
+      }
     });
   </script>
 </dom-module>
-
 <script> 
   ConcertoBehaviors.ContentFactory.registerContent("concerto-graphic", "ConcertoGraphic");
 </script>

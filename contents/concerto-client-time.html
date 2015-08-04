@@ -3,6 +3,12 @@
 -->
 <dom-module id="concerto-client-time">
   <style>
+    :host { 
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
     #clientTime * {
       margin: 0;
     }
@@ -28,11 +34,11 @@
        * Display the current client side time
        *
        */
-      ready: function() {
+      attached: function() {
         this.dateObj = new Date();
         var date = this.prepareDate();
         var time = this.prepareTime();
-        this.$.clientTime.innerHTML = "<p>" + date + "<br />" + time + "</p>"
+        this.$.clientTime.innerHTML = date + "<br />" + time;
         /* Adjust font to largest size possible that fits in time field */
         this.optimalFontSize(this, this.$.clientTime);
       },

@@ -3,6 +3,12 @@
 -->
 <dom-module id="concerto-ticker">
   <style>
+    :host { 
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
     #ticker * {
       margin: 0;
     }
@@ -27,12 +33,11 @@
         config: Object
       },
 
-      /**
-       * When the dom is ready, find optimal font size
-       */
-       ready: function() {
-         this.optimalFontSize(this, this.$.ticker);
-       },
+
+      attached: function() {
+        /* Adjust font to largest size possible that fits in time field */
+        this.optimalFontSize(this, this.$.ticker);
+      },
 
        /**
         * Display the Ticker Text data.
