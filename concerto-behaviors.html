@@ -47,6 +47,13 @@
 
         // Set final font size 
         content.style.fontSize = minSize + "px";
+
+        // Remove margin from any HTML nodes included in the content 
+        for (var i = 0; i < content.childNodes.length; i++) {
+          if (content.childNodes[i].style) {
+            content.childNodes[i].style.margin = "0px";
+          }
+        }
       }
     }
   };
@@ -99,12 +106,6 @@
 
   ConcertoBehaviors.BaseContent = {
 
-    behaviors: [Polymer.NeonAnimationRunnerBehavior],
-
-    listeners: {
-      'neon-animation-finish': '_onNeonAnimationFinish'
-    },
-
     properties: {
       baseUrl: {
         type: String,
@@ -126,20 +127,6 @@
       autoLoad: {
         type: Boolean,
         value: true
-      },
-      animationConfig: {
-        value: function() {
-          return {
-            'entry': {
-              name: 'fade-in-animation',
-              node: this
-            },
-            'exit': {
-              name: 'fade-out-animation',
-              node: this
-            }
-          }
-        }
       }
     },
 
@@ -148,12 +135,6 @@
      */
     _cssTextChanged: function() {
       this.style.cssText = this.cssText;
-    },
-
-    _onNeonAnimationFinish: function() {
-      if (!this.opened) {
-        this.style.display = 'none';
-      }
     },
 
     /**
@@ -165,17 +146,6 @@
      */
     _loaded: function() {
       this.fire('load', this);
-    },
-
-    fadeIn: function() {
-      this.opened = true;
-      this.style.display = 'inline-block';
-      this.playAnimation('entry');
-    },
-
-    fadeOut: function() {
-      this.opened = false;
-      this.playAnimation('exit');
     },
 
     /**

@@ -31,7 +31,12 @@
     Polymer({
       is: "concerto-field",
 
-      behaviors: [ConcertoBehaviors.ContentFactory],
+      behaviors: [ConcertoBehaviors.ContentFactory, 
+                  Polymer.NeonAnimationRunnerBehavior],
+
+      listeners: {
+        'neon-animation-finish': '_onNeonAnimationFinish'
+      },
 
       properties: {
         screenId: Number,
@@ -46,7 +51,38 @@
           type: Number,
           value: 0
         },
-        optConfig: Object
+        optConfig: Object,
+        animationConfig: {
+          value: function() {
+            return {
+              'entry': {
+                name: 'fade-in-animation',
+                node: this.$.content
+              },
+              'exit': {
+                name: 'fade-out-animation',
+                node: this.$.content
+              }
+            }
+          }
+        }
+      },
+
+      _onNeonAnimationFinish: function() {
+        if (!this.$.content.opened) {
+          this.$.content.style.display = 'none';
+        }
+      },
+
+      fadeIn: function() {
+        this.$.content.opened = true;
+        this.$.content.style.display = 'inline-block';
+        this.$.content.playAnimation('entry');
+      },
+
+      fadeOut: function() {
+        this.$.content.opened = false;
+        this.$.content.playAnimation('exit');
       },
 
       created: function() {
@@ -215,13 +251,10 @@
        */
       displayContent: function(content) {
         if (this.currentContent != content) {
-          content.style.zIndex = "100";
           if (this.currentContent) {
-            this.currentContent.fadeOut;
             this.$.content.removeChild(this.currentContent);
           }
           this.$.content.appendChild(content);
-          this.$.content.fadeIn;
           this.currentContent = content;
         }
         this.scheduleNextContent(content.duration * 1000);
