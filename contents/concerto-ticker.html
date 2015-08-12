@@ -1,41 +1,39 @@
-<link rel="import" href="concerto-content.html">
-
 <!--
-The `concerto-ticker` elements provides a static div displaying plaintext.
-
-This element currently does not implement the marquee or scaling features of the
-production Ticker implementation.
-
-@element concerto-content
-@status alpha
+  The `concerto-ticker` elements provides a static div displaying plaintext.
 -->
-<polymer-element name="concerto-ticker" attributes="data config" constructor="ConcertoTicker" extends="concerto-content">
+<dom-module id="concerto-ticker">
+  <style>
+    :host { 
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+
   <template>
-    <style>
-      #ticker * {
-        margin: 0;
-      }
-    </style>
     <div id="ticker" class="ticker"></div>
   </template>
 
   <script>
-    Polymer({
-      /**
-       * Text that goes in the ticker.
-       *
-       * @attribute data
-       * @type String
-       * @default ''
-       */
-       data: '',
+    ConcertoTicker = Polymer({
+      is: "concerto-ticker",
 
-      /**
-       * When the dom is ready, find optimal font size
-       */
-       domReady: function() {
-         PolymerExpressions.prototype.optimalFontSize(this, this.$.ticker);
-       },
+      behaviors: [ConcertoBehaviors.BaseContent, 
+                  ConcertoBehaviors.Utils],
+
+      properties: {
+        data: {
+          type: String,
+          observer: 'dataChanged'
+        },
+        config: Object
+      },
+
+
+      attached: function() {
+        /* Adjust font to largest size possible that fits in time field */
+        this.optimalFontSize(this, this.$.ticker);
+      },
 
        /**
         * Display the Ticker Text data.
@@ -46,10 +44,10 @@ production Ticker implementation.
         */
        dataChanged: function() {
          this.$.ticker.innerHTML = this.data;
-       },
+       }
     });
   </script>
-</polymer-element>
+</dom-module>
 <script>
-  registerContentType("concerto-ticker", "ConcertoTicker");
+  ConcertoBehaviors.ContentFactory.registerContent("concerto-ticker", "ConcertoTicker");
 </script>

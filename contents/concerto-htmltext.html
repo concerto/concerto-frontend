@@ -1,38 +1,41 @@
-<link rel="import" href="concerto-content.html">
-
 <!--
-The `concerto-htmltext` elements provides a static div displaying HTML.
-
-@element concerto-content
-@status alpha
+  The `concerto-htmltext` elements provides a static div displaying HTML.
 -->
-<polymer-element name="concerto-htmltext" attributes="data" constructor="ConcertoHtmlText" extends="concerto-content">
+<dom-module id="concerto-htmltext">
+  <style>
+    :host {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+
   <template>
-    <style>
-      #htmltext * {
-        margin: 0;
-      }
-    </style>
     <div id="htmltext" class="htmltext"></div>
   </template>
 
   <script>
-    Polymer({
-      /**
-       * HTML that goes in the div.
-       *
-       * @attribute data
-       * @type String
-       * @default ''
-       */
-       data: '',
+    ConcertoHtmlText = Polymer({
+      is: "concerto-htmltext",
 
-      /**
-       * When the dom is ready, find optimal font size
-       */
-       domReady: function() {
-         PolymerExpressions.prototype.optimalFontSize(this, this.$.htmltext);
-       },
+      behaviors: [ConcertoBehaviors.BaseContent, 
+                  ConcertoBehaviors.Utils],
+
+      properties: {
+        data: {
+          type: String,
+          observer: 'dataChanged'
+        },
+        config: {
+          type: Object,
+          value: {}
+        }
+      },
+
+      attached: function() {
+        /* Adjust font to largest size possible that fits in time field */
+        this.optimalFontSize(this, this.$.htmltext);
+      },
 
        /**
         * Display the HTMLText data.
@@ -48,5 +51,5 @@ The `concerto-htmltext` elements provides a static div displaying HTML.
   </script>
 </polymer-element>
 <script>
-  registerContentType("concerto-htmltext", "ConcertoHtmlText");
+  ConcertoBehaviors.ContentFactory.registerContent("concerto-htmltext", "ConcertoHtmlText");
 </script>

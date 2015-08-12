@@ -1,42 +1,46 @@
-<link rel="import" href="concerto-content.html">
-
 <!--
-The 'concerto-client-time' element provides the current client side time
-
-@element concerto-client-time
+  The 'concerto-client-time' element provides the current client side time
 -->
-<polymer-element name="concerto-client-time" attributes="config" constructor="ConcertoClientTime" extends="concerto-content">
+<dom-module id="concerto-client-time">
+  <style>
+    :host { 
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    #clientTime * {
+      margin: 0;
+    }
+  </style>
+
   <template>
-    <style>
-      #clientTime * {
-        margin: 0;
-      }
-    </style>
     <div id="clientTime" class="clientTime"></div>
   </template>
 
   <script>
-    Polymer({
-      /**
-       * Date and Time Object 
-       *
-       * @attribute dateObj
-       * @type object Date
-       * @default null
-       */
-       dateObj: null,
+    ConcertoClientTime = Polymer({
+      is: "concerto-client-time",
+
+      behaviors: [ConcertoBehaviors.BaseContent, 
+                  ConcertoBehaviors.Utils],
+
+      properties: {
+        dateObj: Object,
+        config: Object
+      },
 
       /**
        * Display the current client side time
        *
        */
-      domReady: function() {
+      attached: function() {
         this.dateObj = new Date();
         var date = this.prepareDate();
         var time = this.prepareTime();
-        this.$.clientTime.innerHTML = "<p>" + date + "<br />" + time + "</p>"
+        this.$.clientTime.innerHTML = date + "<br />" + time;
         /* Adjust font to largest size possible that fits in time field */
-        PolymerExpressions.prototype.optimalFontSize(this, this.$.clientTime);
+        this.optimalFontSize(this, this.$.clientTime);
       },
 
       /**
@@ -67,7 +71,8 @@ The 'concerto-client-time' element provides the current client side time
       }
     });
   </script>
-</polymer-element>
-<script>
-  registerContentType("concerto-client-time", "ConcertoClientTime");
+</dom-module>
+
+<script> 
+  ConcertoBehaviors.ContentFactory.registerContent("concerto-client-time", "ConcertoClientTime");
 </script>

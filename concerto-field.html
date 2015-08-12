@@ -1,134 +1,78 @@
-<link rel="import" href="bower_components/core-ajax/core-ajax.html">
-<link rel="import" href="bower_components/core-transition/core-transition-css.html">
-
 <!--
-The `concerto-field` element provides a field for a screen which manages
-fetching and displaying content elements.
-
-@element concerto-field
-@status alpha
+  The `concerto-field` element provides a field for a screen which manages
+  fetching and displaying content elements.
 -->
-<polymer-element name="concerto-field" attributes="screenId fieldId fieldName baseURL contentStyle optConfig">
-  <template>
-    <style>
-      :host {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
+<dom-module id="concerto-field">
 
-      #content {
-        width: 100%;
-        height: 100%;
-      }
-    </style>
-    <core-ajax id="contentsData"
-      url="{{baseURL}}/frontend/{{screenId}}/fields/{{fieldId}}/contents.json"
-      handleAs="json"
-      on-core-response="{{handleContents}}"
-      on-core-error="{{handleContentsError}}"></core-ajax>
+  <style>
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #content {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+
+  <template>
+    <iron-ajax 
+      id="contentsData"
+      handle-as="json"
+      on-response="handleContents"
+      on-error="handleContentsError">
+    </iron-ajax>
     <div id="content"></div>
   </template>
 
   <script>
     Polymer({
-      /**
-       * Backend ID of the screen.
-       *
-       * @attribute screenId
-       * @type Number
-       * @default 0
-       */
-      screenId: 0,
+      is: "concerto-field",
 
-      /**
-       * Backend ID of the field.
-       *
-       * @attribute fieldId
-       * @type Number
-       * @default 0
-       */
-      fieldId: 0,
+      behaviors: [ConcertoBehaviors.ContentFactory,
+                  Polymer.NeonAnimationRunnerBehavior],
 
-      /**
-       * Backend name of the field.
-       * Often reflects the kind of content displayed.
-       *
-       * @attribute fieldName
-       * @type String
-       * @default ''
-       */
-      fieldName: '',
+      properties: {
+        screenId: Number,
+        fieldId: Number,
+        fieldName: String,
+        baseUrl: String,
+        handleContentLoadedBound: Object,
+        currentContent: Object,
+        contentStyle: String,
+        contentQueue: Array,
+        contentErrorCount: {
+          type: Number,
+          value: 0
+        },
+        optConfig: Object,
+        animationConfig: {
+          type: Object,
+          value: function() {
+            return {
+              'entry': {
+                name: 'fade-in-animation',
+                node: this.$.content
+              },
+              'exit': {
+                name: 'fade-out-animation',
+                node: this.$.content
+              }
+            }
+          }
+        }
+      },
 
-      /**
-       * Base path to prepend to all URLs.
-       *
-       * @attribute baseURL
-       * @type String
-       * @default ''
-       */
-      baseURL: '',
-
-      /**
-       * Styling to be set on the content elements.
-       *
-       * @attribute contentStyle
-       * @type String
-       * @default ''
-       */
-      contentStyle: '',
-
-      /**
-       * Content currently being shown in the field
-       *
-       * @attribute currentContent
-       */
-      currentContent: undefined,
-
-      /**
-       * Count of sequential errors loading content.
-       *
-       * @atttribute contentErrorCount
-       * @type Number
-       * @default 0
-       */
-      contentErrorCount: 0,
-
-      /**
-       * Queued content data to be displayed.
-       *
-       * @attribute contentQueue
-       * @type Array
-       * @default []
-       */
-
-      /**
-       * Transition to be used when switching between content.
-       *
-       * @attribute transition
-       * @type core-transition
-       * @default core-transition-fade
-       */
-
-      /**
-       * Optional field config
-       *
-       * @attribute optConfig
-       * @type Object
-       * @default {}
-       */
-
-      created: function (){
+      created: function() {
         this.contentQueue = [];
-
-        var meta = document.createElement('core-meta');
-        meta.type = 'transition';
-        this.transition = meta.byId('core-transition-fade');
-
         this.handleContentLoadedBound = this.handleContentLoaded.bind(this);
       },
 
-      domReady: function(){
+      ready: function() {
+        var contents = this.baseUrl + "/frontend/" + this.screenId + "/fields/" + this.fieldId + "/contents.json";
+        this.$.contentsData.url = contents;
         this.loadNextContent();
       },
 
@@ -138,7 +82,7 @@ fetching and displaying content elements.
        * @function fetchContent
        */
       fetchContent: function() {
-        this.$.contentsData.go();
+        this.$.contentsData.generateRequest();
       },
 
       /**
@@ -250,16 +194,19 @@ fetching and displaying content elements.
         });
 
         var contentType = contentData.type;
-        var content = concerto.contentFactory.getType(contentType);
+        var content = ConcertoBehaviors.ContentFactory.getType(contentType);
         if (!content) {
           console.log('No content type registered for ' + contentType);
           return false;
         }
-        content.baseURL = this.baseURL;
-        content.cssText = this.contentStyle;
-        // Setup the listeners before loading the data.
+
+        // Listen for the content load event when content data is intialized
         content.addEventListener('load', this.handleContentLoadedBound);
+        // Content data is set and load event is fired 
+        content.baseUrl = this.baseUrl;
+        content.cssText = this.contentStyle;
         content.fromJSON(simpleContentData);
+
         return true;
       },
 
@@ -283,58 +230,47 @@ fetching and displaying content elements.
        * @param {Element} content ConcertoContent element to be displayed.
        */
       displayContent: function(content) {
-        if (this.currentContent != content) {
-          content.style.zIndex = "100";
-          if (this.currentContent) {
-            // If there is current content, transition it out.
-            this.transition.setup(this.currentContent);
-            this.currentContent.addEventListener('core-transitionend', this.handleTransitionOutComplete);
-            this.transition.go(this.currentContent, {opened: false});
-
-            // Assign a zIndex for the new content > current content.
-            var zIndex = parseInt(this.currentContent.style.zIndex);
-            if (zIndex < 2147483647) {
-              // If the zIndex is greater than 2147483647 allow it to reset.
-              // This number is the max in some browsers, or so SO says.
-              content.style.zIndex = zIndex + 1;
-            }
-          }
-          // Transition the new content in.
-          this.transition.setup(content);
+        if (this.currentContent) {
+          // handle content transition after initial screen load
+          this.addEventListener('neon-animation-finish', function _replaceContent(e) {
+            // remove old content
+            this.handleTransitionOutComplete(e, this.currentContent);
+            this.removeEventListener('neon-animation-finish', _replaceContent);
+            // Transition new content in 
+            this.$.content.appendChild(content);
+            this.playAnimation('entry');
+            content.opened = true;
+            this.currentContent = content;
+          });
+          this.playAnimation('exit');
+        } else {
+          // handle content transition on initial screen load
           this.$.content.appendChild(content);
-          this.transition.go(content, {opened: true});
-
+          this.playAnimation('entry');
+          content.opened = true;
           this.currentContent = content;
         }
+        // wait to insert new contents until old content duration expires
         this.scheduleNextContent(content.duration * 1000);
       },
 
-      /**
-       * Handle the finished transition away from this content.
-       *
-       * At this point the content is no longer being shown in the screen, so we remove it from the DOM.
-       */
-      handleTransitionOutComplete: function(event) {
-        var oldContent = event.target;
-        oldContent.removeEventListener('core-transitionend', this.handleTransitionOutComplete);
-        if (oldContent.parentNode) {
-          oldContent.parentNode.removeChild(event.target);
-        }
+      handleTransitionOutComplete: function(e, content) {
+        Polymer.dom(this.$.content).removeChild(content);
+        Polymer.dom.flush();
       },
 
       /**
        * Schedule an attempt to load the next piece of content for this field.
        *
-       * This uses Polymer's `job` tool so multiple jobs are only fired 1 time.
-       *
        * @function scheduleNextContent
        * @param {Number} msToWait Number of milliseconds to wait.
        */
       scheduleNextContent: function(msToWait) {
-        this.job('updateFieldContent' + this.fieldId, function() {
+        this.debounce('updateFieldContent' + this.fieldId, function() {
           this.loadNextContent();
         }, msToWait);
-      },
+      }
     });
   </script>
-</polymer-element>
+
+</dom-module>

@@ -1,54 +1,64 @@
-<link rel="import" href="concerto-content.html">
-<script src="../utils.js"></script>
-
 <!--
-The `concerto-graphic` elements provides a large static image.
-
-@element concerto-content
-@status alpha
+  The `concerto-graphic` elements provides a large static image.
 -->
-<polymer-element name="concerto-graphic" attributes="path" constructor="ConcertoGraphic" extends="concerto-content" autoLoad="false">
+<dom-module id="concerto-graphic">
+  <style>
+    :host {
+      display: block;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+    }
+
+    .portrait {
+      width: 100%;
+    }
+
+    .landscape {
+      height: 100%;
+    }
+
+    img {
+      /** I do not understand this centering voodoo */
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  </style>
+
   <template>
-    <style>
-      :host {
-        display: block;
-        width: 100%;
-        height: 100%;
-        text-align: center;
-      }
-
-      :host(.core-transition) {
-        overflow: hidden;
-      }
-
-      .portrait {
-        width: 100%;
-      }
-
-      .landscape {
-        height: 100%;
-      }
-
-      img {
-        /** I do not understand this centering voodoo */
-        position: relative;
-        top: 50%;
-        transform: translateY(-50%);
-      }
-    </style>
-    <img id="graphic" src="{{path | resolveURL(baseURL)}}" />
+    <img id="graphic" />
   </template>
 
   <script>
-    Polymer({
+    ConcertoGraphic = Polymer({
+      is: "concerto-graphic",
+
+      behaviors: [ConcertoBehaviors.BaseContent,
+                  ConcertoBehaviors.Utils],
+
+      properties: {
+        baseUrl: String,
+        path: String,
+        cssText: {
+          type: String,
+          observer: '_cssTextChanged'
+        }
+      },
+
+      observers: ['_graphicSrc(baseUrl, path)'],
+
       /**
-       * Path to the image to render.
-       *
-       * @attribute path
-       * @type String
-       * @default ''
-       */
-      path: '',
+        * Apply the styling information to the <img> tag, not the container.
+        */
+      _cssTextChanged: function() {
+        this.$.graphic.style.cssText = this.cssText;
+      },
+
+      _graphicSrc: function(baseUrl, path) {
+        this.$.graphic.src = baseUrl + path;
+      },
 
       created: function (){
         this.handleGraphicLoadBound = this.handleGraphicLoad.bind(this);
@@ -62,12 +72,16 @@ The `concerto-graphic` elements provides a large static image.
         this.$.graphic.addEventListener('load', this.handleGraphicLoadBound);
       },
 
+      attached: function() {
+        this.resize();
+      },
+
       /**
        * Handle the event fired when the graphic has finished loading.
        */
       handleGraphicLoad: function() {
         this.$.graphic.removeEventListener('load', this.handleGraphicLoadBound);
-        this.loaded();
+        this._loaded();
         this.resize();
       },
 
@@ -77,7 +91,7 @@ The `concerto-graphic` elements provides a large static image.
       resize: function() {
         var containerRatio = this.offsetWidth / this.offsetHeight;
         if (!containerRatio) {
-          // Maybe the container is broken or doesn't have a width;
+          // Maybe the container is broken or doesn't have a width
           return;
         }
 
@@ -85,17 +99,10 @@ The `concerto-graphic` elements provides a large static image.
 
         this.$.graphic.classList.toggle('portrait', (imgRatio >= containerRatio));
         this.$.graphic.classList.toggle('landscape', (imgRatio <= containerRatio));
-       },
-
-       /**
-        * Apply the styling information to the <img> tag, not the container.
-        */
-       cssTextChanged: function() {
-         this.$.graphic.style.cssText = this.cssText;
-       },
+      }
     });
   </script>
-</polymer-element>
+</dom-module>
 <script> 
-  registerContentType("concerto-graphic", "ConcertoGraphic");
+  ConcertoBehaviors.ContentFactory.registerContent("concerto-graphic", "ConcertoGraphic");
 </script>
