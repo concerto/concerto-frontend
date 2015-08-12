@@ -72,13 +72,16 @@
         this.$.graphic.addEventListener('load', this.handleGraphicLoadBound);
       },
 
+      attached: function() {
+        this.resize();
+      },
+
       /**
        * Handle the event fired when the graphic has finished loading.
        */
       handleGraphicLoad: function() {
         this.$.graphic.removeEventListener('load', this.handleGraphicLoadBound);
         this._loaded();
-        this.resize();
       },
 
       /**

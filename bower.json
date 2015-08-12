@@ -5,7 +5,7 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^1.0.0",
     "iron-ajax": "PolymerElements/iron-ajax#1.0.0",
-    "neon-animation": "PolymerElements/neon-animation#^1.0.0"
+    "neon-animation": "PolymerElements/neon-animation#1.0.6"
   },
   "resolutions": {
     "polymer": "^1.0.0",

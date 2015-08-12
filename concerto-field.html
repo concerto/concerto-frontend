@@ -31,12 +31,13 @@
     Polymer({
       is: "concerto-field",
 
-      behaviors: [ConcertoBehaviors.ContentFactory, 
+      behaviors: [ConcertoBehaviors.ContentFactory,
                   Polymer.NeonAnimationRunnerBehavior],
 
+      /*
       listeners: {
-        'neon-animation-finish': '_onNeonAnimationFinish'
-      },
+        'neon-animation-finish': 'handleTransitionOutComplete'
+      }, */
 
       properties: {
         screenId: Number,
@@ -53,6 +54,7 @@
         },
         optConfig: Object,
         animationConfig: {
+          type: Object,
           value: function() {
             return {
               'entry': {
@@ -66,23 +68,6 @@
             }
           }
         }
-      },
-
-      _onNeonAnimationFinish: function() {
-        if (!this.$.content.opened) {
-          this.$.content.style.display = 'none';
-        }
-      },
-
-      fadeIn: function() {
-        this.$.content.opened = true;
-        this.$.content.style.display = 'inline-block';
-        this.$.content.playAnimation('entry');
-      },
-
-      fadeOut: function() {
-        this.$.content.opened = false;
-        this.$.content.playAnimation('exit');
       },
 
       created: function() {
@@ -250,14 +235,33 @@
        * @param {Element} content ConcertoContent element to be displayed.
        */
       displayContent: function(content) {
-        if (this.currentContent != content) {
-          if (this.currentContent) {
-            this.$.content.removeChild(this.currentContent);
-          }
+        if (this.currentContent) {
+          // handle content transition after initial screen load
+          this.addEventListener('neon-animation-finish', function _replaceContent(e) {
+            // remove old content
+            this.handleTransitionOutComplete(e, this.currentContent);
+            this.removeEventListener('neon-animation-finish', _replaceContent);
+            // Transition new content in 
+            this.$.content.appendChild(content);
+            this.playAnimation('entry');
+            content.opened = true;
+            this.currentContent = content;
+          });
+          this.playAnimation('exit');
+        } else {
+          // handle content transition on initial screen load
           this.$.content.appendChild(content);
+          this.playAnimation('entry');
+          content.opened = true;
           this.currentContent = content;
         }
+        // wait to insert new contents until old content duration expires
         this.scheduleNextContent(content.duration * 1000);
+      },
+
+      handleTransitionOutComplete: function(e, content) {
+        Polymer.dom(this.$.content).removeChild(content);
+        Polymer.dom.flush();
       },
 
       /**
