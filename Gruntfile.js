@@ -7,8 +7,9 @@ module.exports = function(grunt) {
     // Configure the vulcanize plugin to concatenate our Polymer html files
     vulcanize: {
       options: { 
-        inline: true,
-        strip: true
+        inlineScripts: true,
+        inlineCss: true,
+        stripComments: true
       },
       files: {
         src: "screen.html",

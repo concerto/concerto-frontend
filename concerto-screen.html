@@ -62,7 +62,11 @@
 
       properties: {
         screenId: Number,
-        baseUrl: String,
+        baseUrl: {
+          type: String,
+          value: "",
+          reflectToAttribute: true
+        },
         name: String,
         template: Object
       },
