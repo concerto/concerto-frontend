@@ -82,6 +82,7 @@
       handleGraphicLoad: function() {
         this.$.graphic.removeEventListener('load', this.handleGraphicLoadBound);
         this._loaded();
+        this.resize();
       },
 
       /**
