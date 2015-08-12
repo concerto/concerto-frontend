@@ -6,14 +6,15 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON("package.json"),
     // Configure the vulcanize plugin to concatenate our Polymer html files
     vulcanize: {
-      options: { 
-        inlineScripts: true,
-        inlineCss: true,
-        stripComments: true
-      },
-      files: {
-        src: "screen.html",
-        dest: "concerto-frontend-gem/app/views/concerto_frontend/_frontend.html"
+      default: {
+        options: { 
+          inlineScripts: true,
+          inlineCss: true,
+          stripComments: true
+        },
+        files: {
+          "concerto-frontend-gem/app/views/concerto_frontend/_frontend.html" : "screen.html"
+        },
       },
     },
     watch: {
