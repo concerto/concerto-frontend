@@ -47,7 +47,10 @@
           type: Number,
           value: 0
         },
-        optConfig: Object,
+        optConfig: {
+          type: Object,
+          observer: 'configTransition'
+        },
         animationConfig: {
           type: Object,
           value: function() {
@@ -59,7 +62,7 @@
               'exit': {
                 name: 'fade-out-animation',
                 node: this.$.content
-              }
+              },
             }
           }
         }
@@ -74,6 +77,22 @@
         var contents = this.baseUrl + "/frontend/" + this.screenId + "/fields/" + this.fieldId + "/contents.json";
         this.$.contentsData.url = contents;
         this.loadNextContent();
+      },
+
+      configTransition: function() {
+        // override default fade transition with field config for entry / exit
+        if (this.optConfig['entry_transition'] && this.optConfig['exit_transition']) {
+          this.animationConfig = {
+            'entry': {
+              name: this.optConfig['entry_transition'],
+              node: this.$.content
+            },
+            'exit': {
+              name: this.optConfig['exit_transition'],
+              node: this.$.content
+            }
+          }
+        }
       },
 
       /**

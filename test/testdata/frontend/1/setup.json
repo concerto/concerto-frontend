@@ -19,7 +19,8 @@
           "id":1,
           "name":"Graphics",
           "config":{
-    
+            "entry_transition": "slide-from-left-animation",
+            "exit_transition": "slide-right-animation"
           }
         }
       },
@@ -35,7 +36,8 @@
           "id":2,
           "name":"Ticker",
           "config":{
-
+            "entry_transition": "scale-up-animation",
+            "exit_transition": "scale-down-animation"
           }
         }
       },
@@ -51,7 +53,7 @@
           "id":3,
           "name":"Text",
           "config":{
-
+           
           }
         }
       },
@@ -67,7 +69,7 @@
           "id":4,
           "name":"Time",
           "config":{
-
+            
           }
         }
       }
