@@ -42,7 +42,10 @@
         handleContentLoadedBound: Object,
         currentContent: Object,
         contentStyle: String,
-        contentQueue: Array,
+        contentQueue: {
+          type: Array,
+          value: []
+        },
         contentErrorCount: {
           type: Number,
           value: 0
