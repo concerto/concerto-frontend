@@ -37,7 +37,8 @@
           "name":"Ticker",
           "config":{
             "entry_transition": "scale-up-animation",
-            "exit_transition": "scale-down-animation"
+            "exit_transition": "scale-down-animation",
+            "disable_text_autosize": false
           }
         }
       },
@@ -53,7 +54,7 @@
           "id":3,
           "name":"Text",
           "config":{
-           
+            
           }
         }
       },
