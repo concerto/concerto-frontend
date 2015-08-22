@@ -8131,7 +8131,7 @@ if (!window.Promise) {
      * the element's dimensions as constraints.
      */
     optimalFontSize: function(element, content) {
-      if (element.parentNode) {
+      if (element.parentNode && !element.config['disable_text_autosize']) {
         // Font size and container constraints
         var maxSize = 200;
         var minSize = 4;
@@ -8242,6 +8242,10 @@ if (!window.Promise) {
         type: Boolean,
         value: false,
         reflectToAttribute: true
+      },
+      config: {
+        type: Object,
+        reflectToAttribute: true
       }
     },
 
@@ -8309,8 +8313,7 @@ if (!window.Promise) {
         data: {
           type: String,
           observer: 'dataChanged'
-        },
-        config: Object
+        }
       },
 
 
@@ -8462,10 +8465,6 @@ if (!window.Promise) {
         data: {
           type: String,
           observer: 'dataChanged'
-        },
-        config: {
-          type: Object,
-          value: {}
         }
       },
 
@@ -8514,8 +8513,7 @@ if (!window.Promise) {
                   ConcertoBehaviors.Utils],
 
       properties: {
-        dateObj: Object,
-        config: Object
+        dateObj: Object
       },
 
       /**
@@ -8640,18 +8638,23 @@ if (!window.Promise) {
       },
 
       configTransition: function() {
-        // override default fade transition with field config for entry / exit
-        if (this.optConfig['entry_transition'] && this.optConfig['exit_transition']) {
-          this.animationConfig = {
-            'entry': {
-              name: this.optConfig['entry_transition'],
-              node: this.$.content
-            },
-            'exit': {
-              name: this.optConfig['exit_transition'],
-              node: this.$.content
-            }
+        // Customize entry transition
+        if (this.optConfig['entry_transition']) {
+          if (this.optConfig['entry_transition'] == 'replace') {
+            this.animationConfig['entry']['name'] = 'transform-animation';
+          } else {
+            this.animationConfig['entry']['name'] = this.optConfig['entry_transition'];
           }
+          this.animationConfig['entry']['node'] = this.$.content;
+        }
+        // Customize exit transition
+        if (this.optConfig['exit_transition']) {
+          if (this.optConfig['exit_transition'] == 'replace') {
+            this.animationConfig['exit']['name'] = 'transform-animation';
+          } else {
+            this.animationConfig['exit']['name'] = this.optConfig['exit_transition'];
+          }
+          this.animationConfig['exit']['node'] = this.$.content;
         }
       },
 

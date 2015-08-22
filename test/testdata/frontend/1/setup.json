@@ -70,7 +70,8 @@
           "id":4,
           "name":"Time",
           "config":{
-            
+            "entry_transition": "replace",
+            "exit_transition": "replace"
           }
         }
       }

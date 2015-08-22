@@ -83,18 +83,23 @@
       },
 
       configTransition: function() {
-        // override default fade transition with field config for entry / exit
-        if (this.optConfig['entry_transition'] && this.optConfig['exit_transition']) {
-          this.animationConfig = {
-            'entry': {
-              name: this.optConfig['entry_transition'],
-              node: this.$.content
-            },
-            'exit': {
-              name: this.optConfig['exit_transition'],
-              node: this.$.content
-            }
+        // Customize entry transition
+        if (this.optConfig['entry_transition']) {
+          if (this.optConfig['entry_transition'] == 'replace') {
+            this.animationConfig['entry']['name'] = 'transform-animation';
+          } else {
+            this.animationConfig['entry']['name'] = this.optConfig['entry_transition'];
           }
+          this.animationConfig['entry']['node'] = this.$.content;
+        }
+        // Customize exit transition
+        if (this.optConfig['exit_transition']) {
+          if (this.optConfig['exit_transition'] == 'replace') {
+            this.animationConfig['exit']['name'] = 'transform-animation';
+          } else {
+            this.animationConfig['exit']['name'] = this.optConfig['exit_transition'];
+          }
+          this.animationConfig['exit']['node'] = this.$.content;
         }
       },
 
