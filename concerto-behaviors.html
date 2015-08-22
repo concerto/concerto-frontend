@@ -21,7 +21,7 @@
      * the element's dimensions as constraints.
      */
     optimalFontSize: function(element, content) {
-      if (element.parentNode) {
+      if (element.parentNode && !element.config['disable_text_autosize']) {
         // Font size and container constraints
         var maxSize = 200;
         var minSize = 4;
@@ -131,6 +131,10 @@
       opened: {
         type: Boolean,
         value: false,
+        reflectToAttribute: true
+      },
+      config: {
+        type: Object,
         reflectToAttribute: true
       }
     },
