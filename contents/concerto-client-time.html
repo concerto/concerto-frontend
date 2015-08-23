@@ -26,6 +26,10 @@
                   ConcertoBehaviors.Utils],
 
       properties: {
+        offset: {
+          type: Number,
+          observer: 'displayTime'
+        },
         dateObj: Object
       },
 
@@ -33,8 +37,18 @@
        * Display the current client side time
        *
        */
-      attached: function() {
+      displayTime: function() {
         this.dateObj = new Date();
+
+        if (this.offset) {
+          var localTime = this.dateObj.getTime();
+          var localOffset = this.dateObj.getTimezoneOffset() * 60000;
+          var utc = localTime + localOffset;
+          var time = utc + this.offset*1000;
+
+          this.dateObj = new Date(time);
+        }
+
         var date = this.prepareDate();
         var time = this.prepareTime();
         this.$.clientTime.innerHTML = date + "<br />" + time;
