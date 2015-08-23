@@ -8517,7 +8517,7 @@ if (!window.Promise) {
       properties: {
         offset: {
           type: Number,
-          observer: 'displayTime'
+          reflectToAttribute: true
         },
         dateObj: Object
       },
@@ -8526,7 +8526,7 @@ if (!window.Promise) {
        * Display the current client side time
        *
        */
-      displayTime: function() {
+      attached: function() {
         this.dateObj = new Date();
 
         if (this.offset) {
