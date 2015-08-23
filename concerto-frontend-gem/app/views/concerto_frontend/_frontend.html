@@ -8515,6 +8515,10 @@ if (!window.Promise) {
                   ConcertoBehaviors.Utils],
 
       properties: {
+        offset: {
+          type: Number,
+          observer: 'displayTime'
+        },
         dateObj: Object
       },
 
@@ -8522,8 +8526,17 @@ if (!window.Promise) {
        * Display the current client side time
        *
        */
-      attached: function() {
+      displayTime: function() {
         this.dateObj = new Date();
+
+        if (this.offset) {
+          var localTime = this.dateObj.getTime();
+          var localOffset = this.dateObj.getTimezoneOffset() * 60000;
+          var utc = localTime + localOffset;
+          var time = utc + this.offset*1000;
+          this.dateObj = new Date(time);
+        }
+
         var date = this.prepareDate();
         var time = this.prepareTime();
         this.$.clientTime.innerHTML = date + "<br />" + time;
@@ -8596,6 +8609,10 @@ if (!window.Promise) {
         fieldId: Number,
         fieldName: String,
         baseUrl: String,
+        timeOffset: {
+          type: Number,
+          reflectToAttribute: true 
+        },
         handleContentLoadedBound: Object,
         currentContent: Object,
         contentStyle: String,
@@ -8719,7 +8736,7 @@ if (!window.Promise) {
             'id': 0,
             'name': 'System Time',
             'type': 'ClientTime',
-            'render_details': {'data': null}
+            'render_details': {'offset': this.timeOffset}
           };
         }
 
@@ -8889,7 +8906,7 @@ if (!window.Promise) {
       <div id="{{templateId(template.id)}}" class="template" style$="{{backgroundImage(template.path)}}">
         <template is="dom-repeat" items="{{template.positions}}" as="position">
           <div class="position" id="{{positionId(position.id)}}" style$="{{computeFieldPosition(position)}}">
-            <concerto-field screen-id="{{screenId}}" field-id="{{position.field.id}}" field-name="{{position.field.name}}" base-url="{{baseUrl}}" content-style="{{position.style}}" opt-config="{{position.field.config}}">
+            <concerto-field screen-id="{{screenId}}" field-id="{{position.field.id}}" field-name="{{position.field.name}}" base-url="{{baseUrl}}" time-offset="{{timeOffset}}" content-style="{{position.style}}" opt-config="{{position.field.config}}">
             </concerto-field>
           </div>
         </template>
@@ -8911,7 +8928,8 @@ if (!window.Promise) {
           reflectToAttribute: true
         },
         name: String,
-        template: Object
+        template: Object,
+        timeOffset: Number
       },
 
       ready: function() {
@@ -8953,6 +8971,7 @@ if (!window.Promise) {
         var data = response.response;
         this.name = data.name;
         this.template = data.template;
+        this.timeOffset = data.time_zone;
       },
 
       setupChanged: function(event, response) {

@@ -39,6 +39,10 @@
         fieldId: Number,
         fieldName: String,
         baseUrl: String,
+        timeOffset: {
+          type: Number,
+          reflectToAttribute: true 
+        },
         handleContentLoadedBound: Object,
         currentContent: Object,
         contentStyle: String,
@@ -162,7 +166,7 @@
             'id': 0,
             'name': 'System Time',
             'type': 'ClientTime',
-            'render_details': {'data': null}
+            'render_details': {'offset': this.timeOffset}
           };
         }
 
