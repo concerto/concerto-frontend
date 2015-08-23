@@ -8534,7 +8534,6 @@ if (!window.Promise) {
           var localOffset = this.dateObj.getTimezoneOffset() * 60000;
           var utc = localTime + localOffset;
           var time = utc + this.offset*1000;
-
           this.dateObj = new Date(time);
         }
 
