@@ -1,20 +1,20 @@
 [
   {
     "duration":8,
-    "id":31,
-    "name":"Test text text",
-    "type":"HtmlText",
-    "render_details":{
-      "data":"\u003Cp\u003ETest HtmlText text\u003C/p\u003E\n"
-    }
-  },
-  {
-    "duration":8,
     "id":32,
     "name":"Test html text",
     "type":"HtmlText",
     "render_details":{
       "data":"\u003Cp\u003ETest HtmlText text line 1\u003C/p\u003E\n \u003Cp\u003ETest HtmlText text line 2\u003C/p\u003E\n"
+    }
+  },
+  {
+    "duration":8,
+    "id":31,
+    "name":"Test text text",
+    "type":"HtmlText",
+    "render_details":{
+      "data":"\u003Cp\u003ETest HtmlText text\u003C/p\u003E\n"
     }
   },
   {
