@@ -8159,13 +8159,6 @@ if (!window.Promise) {
 
         // Set final font size 
         content.style.fontSize = minSize + "px";
-
-        // Remove margin from any HTML nodes included in the content 
-        for (var i = 0; i < content.childNodes.length; i++) {
-          if (content.childNodes[i].style) {
-            content.childNodes[i].style.margin = "0px";
-          }
-        }
       }
     }
   };
@@ -8297,6 +8290,10 @@ if (!window.Promise) {
       position: absolute;
       width: 100%;
       height: 100%;
+    }
+
+    #ticker {
+      position: absolute;
     }
   </style>
 
@@ -8449,6 +8446,10 @@ if (!window.Promise) {
       position: absolute;
       width: 100%;
       height: 100%;
+    }
+
+    #htmltext {
+      position: absolute;
     }
   </style>
 
