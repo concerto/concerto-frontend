@@ -9,6 +9,7 @@
       position: relative;
       width: 100%;
       height: 100%;
+      cursor: none;
     }
     .position {
       position: absolute;
@@ -63,6 +64,7 @@
 
       properties: {
         screenId: Number,
+        preview: String,
         baseUrl: {
           type: String,
           value: "",
@@ -80,6 +82,10 @@
         this.$.updateScreenData.url = setup;
         this.updateScreenData(this.$.initScreenData);
         setInterval(this.updateScreenData, 8000, this.$.updateScreenData);
+        /* show cursor if screen is in preview mode; hide otherwise */
+        if (this.preview == "true") {
+          this.style.cursor = "auto";
+        }
       },
 
       templateId: function(id) {

@@ -8883,6 +8883,7 @@ if (!window.Promise) {
       position: relative;
       width: 100%;
       height: 100%;
+      cursor: none;
     }
     .position {
       position: absolute;
@@ -8923,6 +8924,7 @@ if (!window.Promise) {
 
       properties: {
         screenId: Number,
+        preview: String,
         baseUrl: {
           type: String,
           value: "",
@@ -8940,6 +8942,10 @@ if (!window.Promise) {
         this.$.updateScreenData.url = setup;
         this.updateScreenData(this.$.initScreenData);
         setInterval(this.updateScreenData, 8000, this.$.updateScreenData);
+        /* show cursor if screen is in preview mode; hide otherwise */
+        if (this.preview == "true") {
+          this.style.cursor = "auto";
+        }
       },
 
       templateId: function(id) {
@@ -8996,6 +9002,6 @@ if (!window.Promise) {
   </script>
 
 </dom-module></div>
-  <concerto-screen screen-id="<%= params[:id] %>"></concerto-screen>
+  <concerto-screen screen-id="<%= params[:id] %>" preview="<%= @preview %>"></concerto-screen>
 
 </body></html>
