@@ -1,20 +1,20 @@
 [ 
   {
-    "duration":6,
-    "id":21,
-    "name":"Test ticker text",
-    "type":"Ticker",
-    "render_details":{
-      "data":"\u003Cp\u003ETest ticker test with HTML markup\u003C/p\u003E\n"
-    }
-  },
-  {
     "duration":10,
     "id":22,
     "name":"More test text",
     "type":"Ticker",
     "render_details":{
       "data":"This is ticker text without any HTML markup."
+    }
+  },
+  {
+    "duration":10,
+    "id":21,
+    "name":"Test ticker text",
+    "type":"Ticker",
+    "render_details":{
+      "data":"\u003Cp\u003ETest ticker test with HTML markup\u003C/p\u003E\n"
     }
   },
   {
