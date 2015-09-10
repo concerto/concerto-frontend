@@ -8542,8 +8542,13 @@ if (!window.Promise) {
        *
        */
       attached: function() {
-        this.$.clientTime.innerHTML = moment().tz(this.timezone).format('MM/DD/YY') + "<br />" + 
-          moment().tz(this.timezone).format('hh:mm A');
+        if (this.config["time_format"]) {          
+          var datetime = moment().tz(this.timezone).format(this.config["time_format"]);
+        } else {
+          var datetime = moment().tz(this.timezone).format("MM/DD/YY <br/> hh:mm A");
+        }
+
+        this.$.clientTime.innerHTML = datetime;
         /* Adjust font to largest size possible that fits in time field */
         this.optimalFontSize(this, this.$.clientTime);
       }
