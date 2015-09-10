@@ -39,8 +39,8 @@
         fieldId: Number,
         fieldName: String,
         baseUrl: String,
-        timeOffset: {
-          type: Number,
+        timezone: {
+          type: String,
           reflectToAttribute: true 
         },
         handleContentLoadedBound: Object,
@@ -166,7 +166,7 @@
             'id': 0,
             'name': 'System Time',
             'type': 'ClientTime',
-            'render_details': {'offset': this.timeOffset}
+            'render_details': {'timezone': this.timezone}
           };
         }
 

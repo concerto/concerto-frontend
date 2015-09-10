@@ -46,7 +46,7 @@
               field-id="{{position.field.id}}"
               field-name="{{position.field.name}}"
               base-url="{{baseUrl}}"
-              time-offset="{{timeOffset}}"
+              timezone="{{timezone}}"
               content-style="{{position.style}}"
               opt-config="{{position.field.config}}">
             </concerto-field>
@@ -72,7 +72,7 @@
         },
         name: String,
         template: Object,
-        timeOffset: Number
+        timezone: String
       },
 
       ready: function() {
@@ -118,7 +118,7 @@
         var data = response.response;
         this.name = data.name;
         this.template = data.template;
-        this.timeOffset = data.time_zone;
+        this.timezone = data.time_zone;
       },
 
       setupChanged: function(event, response) {
