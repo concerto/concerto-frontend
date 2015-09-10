@@ -26,8 +26,8 @@
                   ConcertoBehaviors.Utils],
 
       properties: {
-        offset: {
-          type: Number,
+        timezone: {
+          type: String,
           reflectToAttribute: true
         },
         dateObj: Object
@@ -38,48 +38,10 @@
        *
        */
       attached: function() {
-        this.dateObj = new Date();
-
-        if (this.offset) {
-          var localTime = this.dateObj.getTime();
-          var localOffset = this.dateObj.getTimezoneOffset() * 60000;
-          var utc = localTime + localOffset;
-          var time = utc + this.offset*1000;
-          this.dateObj = new Date(time);
-        }
-
-        var date = this.prepareDate();
-        var time = this.prepareTime();
-        this.$.clientTime.innerHTML = date + "<br />" + time;
+        this.$.clientTime.innerHTML = moment().tz(this.timezone).format('MM/DD/YY') + "<br />" + 
+          moment().tz(this.timezone).format('hh:mm A');
         /* Adjust font to largest size possible that fits in time field */
         this.optimalFontSize(this, this.$.clientTime);
-      },
-
-      /**
-       * Get the current date
-       *
-       */
-      prepareDate: function() {
-        return this.dateObj.toLocaleDateString();
-      },
-
-      /**
-       * Get the current time
-       *
-       */
-      prepareTime: function() {
-        var rawTime = this.dateObj.toLocaleTimeString();
-        var amPm = rawTime.slice(-2);
-
-        var hours = this.dateObj.getHours();
-        hours = ((hours + 11) % 12 + 1);
-        var minutes = this.dateObj.getMinutes();
-
-        if (minutes < 10) { 
-          minutes = "0" + minutes;
-        }
-
-        return hours + ":" + minutes + " " + amPm;
       }
     });
   </script>
