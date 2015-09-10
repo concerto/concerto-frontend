@@ -1,6 +1,7 @@
 {
   "id":1,
   "name":"Demo Screen",
+  "time_zone": "America/New_York",
   "template":{
     "id":1,
     "name":"Default Template",
@@ -71,7 +72,8 @@
           "name":"Time",
           "config":{
             "entry_transition": "replace",
-            "exit_transition": "replace"
+            "exit_transition": "replace",
+            "time_format": "MM-DD-YY <br/> hh:mm A"
           }
         }
       }
