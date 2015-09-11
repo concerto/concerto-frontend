@@ -38,10 +38,23 @@
        *
        */
       attached: function() {
-        if (this.config["time_format"]) {          
-          var datetime = moment().tz(this.timezone).format(this.config["time_format"]);
+        var datetime;
+        if (this.timezone != "null") {
+          // screen time zone is specified 
+          if (this.config["time_format"]) { 
+            // screen has customized date/time format in field config         
+            datetime = moment().tz(this.timezone).format(this.config["time_format"]);
+          } else {
+            datetime = moment().tz(this.timezone).format("MM/DD/YY <br/> hh:mm A");
+          }
         } else {
-          var datetime = moment().tz(this.timezone).format("MM/DD/YY <br/> hh:mm A");
+          // screen has no time zone set 
+          if (this.config["time_format"]) {  
+            // screen has customized date/time format in field config          
+            datetime = moment().format(this.config["time_format"]);
+          } else {
+            datetime = moment().format("MM/DD/YY <br/> hh:mm A");
+          }
         }
 
         this.$.clientTime.innerHTML = datetime;
