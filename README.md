@@ -49,7 +49,7 @@ The grunt tasks will update the concatenated Polymer web components file and the
 #### Building the concerto_frontend gem
 The following notes are kept for any developers on the Concerto team that need to push updates to RubyGems:
 
-1. Edit the concerto-frontend.html (the vulcanized output file) and remove everything from the beginning until the first `<script>` tag, then search for the word "vulcanize" and remove the preceding closing `</head>` tag up to the following `<dom-module` tag, then go to the end of the file and remove everything after the closing `</dom-module>` tag.  Next, copy this file to the `concerto-frontend-gem/app/assets/html/concerto_frontend` directory.
+1. Edit the `concerto-frontend-gem/app/assets/html/concerto_frontend/concerto-frontend.html` (vulcanized output file) and remove everything from the beginning until the first `<script>` tag, then search for the word "vulcanize" and remove the preceding closing `</head>` tag up to the following `<dom-module` tag, then go to the end of the file and remove everything after the closing `</dom-module>` tag.
 2. external javascripts (which are no longer vulcanized) should be placed in the vendor/assets/javascripts directory and required in the application.js
 3. change direcetories to the concerto-frontend-gem and then run ```gem build concerto_frontend.gemspec```
 4. push the final gem to RubyGems using ```gem push concerto_frontend-X.X.X.gem``` and add to core Concerto as concerto_frontend with the latest version number
