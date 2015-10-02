@@ -33,6 +33,7 @@ The quickest method of development is to run the frontend without core Concerto.
 1. run ```npm install polyserve``` to install a simple web server to run our web component frontend
 2. start the web server by simply running ```polyserve``` while in the project's root directory
 3. polyserve will indicate which port and path the frontend can be reached at (this should be localhost:8080/components/concerto_frontend/demo.html)
+4. whatever html import changes you make to demo.html should also be included in the vulcanize_this.html
 
 #### Development through Concerto
 This method allows developers to run live changes through core Concerto. Follow these steps to begin developing:
@@ -41,6 +42,7 @@ This method allows developers to run live changes through core Concerto. Follow 
 2. add or edit the frontend plugin for installation by local system path
 3. when specifying the path, the gem's root directory and gemspec are located in the concerto-frontend-gem folder within this project
 4. run the ```grunt watch``` (add --verbose for extra debugging details) task within this project's root directory. This will automatically run the vulcanize task whenever changes are made to the frontend ***HOWEVER*** you will need to change the vulcanized output see building, step 1 below.
+5. whatever html import changes you make to demo.html should also be included in the vulcanize_this.html
 
 The grunt tasks will update the concatenated Polymer web components file and the changes should be reflected when previewing a screen under core Concerto.
 
@@ -48,5 +50,6 @@ The grunt tasks will update the concatenated Polymer web components file and the
 The following notes are kept for any developers on the Concerto team that need to push updates to RubyGems:
 
 1. Edit the concerto-frontend.html (the vulcanized output file) and remove everything from the beginning until the first `<script>` tag, then search for the word "vulcanize" and remove the preceding closing `</head>` tag up to the following `<dom-module` tag, then go to the end of the file and remove everything after the closing `</dom-module>` tag.  Next, copy this file to the `concerto-frontend-gem/app/assets/html/concerto_frontend` directory.
-2. change direcetories to the concerto-frontend-gem and then run ```gem build concerto_frontend.gemspec```
-3. push the final gem to RubyGems using ```gem push concerto_frontend-X.X.X.gem``` and add to core Concerto as concerto_frontend with the latest version number
+2. external javascripts (which are no longer vulcanized) should be placed in the vendor/assets/javascripts directory and required in the application.js
+3. change direcetories to the concerto-frontend-gem and then run ```gem build concerto_frontend.gemspec```
+4. push the final gem to RubyGems using ```gem push concerto_frontend-X.X.X.gem``` and add to core Concerto as concerto_frontend with the latest version number
