@@ -3,14 +3,15 @@
   "version": "1.0.0",
   "description": "Concerto Digital Signage Frontend",
   "dependencies": {
-    "grunt" : "0.4.0",
+    "grunt": "0.4.0",
     "grunt-vulcanize": "1.0.0",
-    "grunt-contrib-watch" : "0.6.1"
+    "grunt-contrib-watch": "0.6.1"
   },
   "devDependencies": {
-    "grunt" : "0.4.0",
-    "grunt-vulcanize": "1.0.0",
-    "grunt-contrib-watch" : "0.6.1"
+    "grunt": "0.4.0",
+    "grunt-bowercopy": "^1.2.3",
+    "grunt-contrib-watch": "0.6.1",
+    "grunt-vulcanize": "1.0.0"
   },
   "repository": {
     "type": "git",
