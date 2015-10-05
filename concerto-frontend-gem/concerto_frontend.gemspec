@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.summary     = "Concerto Frontend"
   s.description = "A Ruby Gem that contains the Concerto polymer frontend."
 
-  s.files = Dir["{app,config,db,lib}/**/*", "Rakefile"]
+  s.files = Dir["{app,config,db,lib,vendor}/**/*", "Rakefile"]
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency "rails", "~> 4.1.6"
