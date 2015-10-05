@@ -15,7 +15,7 @@ The concerto-frontend gem should be installed by default with the latest Concert
 
 Development
 -----------
-The concerto-frontend uses web components and the latest [Polymer 1.0](https://www.polymer-project.org/1.0/) library.
+The concerto-frontend uses web components and the latest [Polymer 1.0](https://www.polymer-project.org/1.0/) library. External javascripts should be placed in the vendor/assets/javascripts directory and required in the application.js.  
 
 #### Dependencies
 1. [node js](https://nodejs.org/) 
@@ -49,7 +49,6 @@ The grunt tasks will update the concatenated Polymer web components file and the
 #### Building the concerto_frontend gem
 The following notes are kept for any developers on the Concerto team that need to push updates to RubyGems:
 
-1. Edit the `concerto-frontend-gem/app/assets/html/concerto_frontend/concerto-frontend.html` (vulcanized output file) and remove everything from the beginning until the first `<script>` tag, then search for the word "vulcanize" and remove the preceding closing `</head>` tag up to the following `<dom-module` tag, then go to the end of the file and remove everything after the closing `</dom-module>` tag.
-2. external javascripts (which are no longer vulcanized) should be placed in the vendor/assets/javascripts directory and required in the application.js.  This can be accomplished by running `grunt bowercopy`
-3. change direcetories to the concerto-frontend-gem and then run ```gem build concerto_frontend.gemspec```
-4. push the final gem to RubyGems using ```gem push concerto_frontend-X.X.X.gem``` and add to core Concerto as concerto_frontend with the latest version number
+1. Run `grunt` so it performs the default actions of vulcanizing the vulcanize_this.html file, strips the extra html from the vulcanized output file, and copies external js files to the vendor/assets/javascripts directory.
+2. change direcetories to the concerto-frontend-gem and then run ```gem build concerto_frontend.gemspec```
+3. push the final gem to RubyGems using ```gem push concerto_frontend-X.X.X.gem``` and add to core Concerto as concerto_frontend with the latest version number
