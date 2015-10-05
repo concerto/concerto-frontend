@@ -75,5 +75,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-regex-replace');
 
   // Set up our default task that is run when 'grunt' is executed
-  grunt.registerTask('default', ['vulcanize', 'bowercopy']);
+  grunt.registerTask('default', ['vulcanize', 'regex-replace', 'bowercopy']);
 }
