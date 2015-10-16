@@ -35,6 +35,10 @@
                   Polymer.NeonAnimationRunnerBehavior],
 
       properties: {
+        cacheKey: {
+          type: String,
+          observer: 'cacheKeyChanged'
+        },
         screenId: Number,
         fieldId: Number,
         fieldName: String,
@@ -86,6 +90,12 @@
         this.loadNextContent();
       },
 
+      cacheKeyChanged: function (newValue, oldValue) {
+        if (oldValue !== undefined && oldValue !== null && newValue !== oldValue) {
+          this.fire('fieldCacheKeyChanged', { newValue: newValue, oldValue: oldValue });
+        }
+      },
+
       configTransition: function() {
         // Customize entry transition
         if (this.optConfig['entry_transition']) {
@@ -123,6 +133,8 @@
        * an immediate update of the field.
        */
       handleContents: function(event, response) {
+        var key = response.xhr.getResponseHeader('X-Concerto-Frontend-Setup-Key');
+        this.cacheKey = key;
         Array.prototype.push.apply(this.contentQueue, response.response);
         if(!this.currentContent && this.contentQueue.length >= 1) {
           // We are currently not showing content and some is now in the queue.
