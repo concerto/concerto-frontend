@@ -30,11 +30,6 @@
       handle-as="json"
       on-response="handleScreenData">
     </iron-ajax>
-    <iron-ajax
-      id="updateScreenData"
-      handle-as="json"
-      on-response="setupChanged">
-    </iron-ajax>
     <!-- Create template background, positions, and fields -->
     <template is="dom-if" if="{{template.id}}">
       <div id="{{templateId(template.id)}}" class="template"
@@ -48,7 +43,8 @@
               base-url="{{baseUrl}}"
               timezone="{{timezone}}"
               content-style="{{position.style}}"
-              opt-config="{{position.field.config}}">
+              opt-config="{{position.field.config}}"
+              cache-key="{{cacheKey}}">
             </concerto-field>
           </div>
         </template>
@@ -63,6 +59,10 @@
       behaviors: [ConcertoBehaviors.Utils],
 
       properties: {
+        cacheKey: {
+          type: String,
+          observer: 'cacheKeyChanged'
+        },
         screenId: Number,
         preview: String,
         baseUrl: {
@@ -76,16 +76,18 @@
       },
 
       ready: function() {
-        /* get intial screen data and check for changes periodically */
+        /* get intial screen data */
         var setup = this.baseUrl + "/frontend/" + this.screenId + "/setup.json";
         this.$.initScreenData.url = setup;
-        this.$.updateScreenData.url = setup;
-        this.updateScreenData(this.$.initScreenData);
-        setInterval(this.updateScreenData, 8000, this.$.updateScreenData);
+        this.$.initScreenData.generateRequest();
         /* show cursor if screen is in preview mode; hide otherwise */
         if (this.preview == "true") {
           this.style.cursor = "auto";
         }
+
+        this.addEventListener('fieldCacheKeyChanged', function (e, detail) { 
+          this.cacheKeyChanged(e.detail.newValue, e.detail.oldValue);
+        });
       },
 
       templateId: function(id) {
@@ -109,33 +111,25 @@
                "height: " + (position.bottom - position.top) * 100 + "%;";
       },
 
-      updateScreenData: function(ajax) {
-        ajax.generateRequest();
-      },
-
       handleScreenData: function(event, response) {
         /* set screen setup properties */
         var data = response.response;
         this.name = data.name;
         this.template = data.template;
         this.timezone = data.time_zone;
+
+        var key = response.xhr.getResponseHeader('etag');
+        if (key != null) {
+          key = key.replace(/"/g, '');
+          this.cacheKey = key;
+        }
       },
 
-      setupChanged: function(event, response) {
-        /* reload screen if changes are found in screen setup */
-        var template = this.template;
-        var response = response.response;
-
-        /* Check for changes to screen's effective template */
-        if (template.name != response.template.name) {
+      cacheKeyChanged: function(newValue, oldValue) {
+        if (oldValue !== undefined && oldValue !== null && oldValue !== newValue)
+        {
+          console.log("cacheKeyChanged reloading screen");
           location.reload();
-        }
-
-        /* Check for any changes to positions */
-        for (var position in this.template.positions) {
-          if (!(position in response.template.positions)) {
-            location.reload();
-          }
         }
       }
     });

@@ -1,20 +1,4 @@
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-@license
-Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><script>(function () {
+<script>(function () {
 function resolve() {
 document.body.removeAttribute('unresolved');
 }
@@ -584,7 +568,7 @@ debouncer.stop();
 }
 }
 });
-Polymer.version = '1.1.3';
+Polymer.version = '1.1.4';
 Polymer.Base._addFeature({
 _registerFeatures: function () {
 this._prepIs();
@@ -3923,6 +3907,7 @@ var h$ = this._handlers;
 for (var i = 0, l = h$.length, h; i < l && (h = h$[i]); i++) {
 h[0].call(this, h[1], h[2]);
 }
+this._handlers = [];
 }
 });
 (function () {
@@ -4046,7 +4031,7 @@ this._boundPaths = this._boundPaths || {};
 if (from) {
 this._boundPaths[to] = from;
 } else {
-this.unbindPath(to);
+this.unlinkPaths(to);
 }
 },
 unlinkPaths: function (path) {
@@ -4055,23 +4040,13 @@ delete this._boundPaths[path];
 }
 },
 _notifyBoundPaths: function (path, value) {
-var from, to;
 for (var a in this._boundPaths) {
 var b = this._boundPaths[a];
 if (path.indexOf(a + '.') == 0) {
-from = a;
-to = b;
-break;
+this.notifyPath(this._fixPath(b, a, path), value);
+} else if (path.indexOf(b + '.') == 0) {
+this.notifyPath(this._fixPath(a, b, path), value);
 }
-if (path.indexOf(b + '.') == 0) {
-from = b;
-to = a;
-break;
-}
-}
-if (from && to) {
-var p = this._fixPath(to, from, path);
-this.notifyPath(p, value);
 }
 },
 _fixPath: function (property, root, path) {
@@ -4299,7 +4274,7 @@ MIXIN_RULE: 1000
 OPEN_BRACE: '{',
 CLOSE_BRACE: '}',
 _rx: {
-comments: /\/\*[^*]*\*+([^/*][^*]*\*+)*\//gim,
+comments: /\/\*[^*]*\*+([^\/*][^*]*\*+)*\//gim,
 port: /@import[^;]*;/gim,
 customProp: /(?:^|[\s;])--[^;{]*?:[^{};]*?(?:[;\n]|$)/gim,
 mixinProp: /(?:^|[\s;])--[^;{]*?:[^{;]*?{[^}]*?}(?:[;\n]|$)?/gim,
@@ -8560,8 +8535,7 @@ if (!window.Promise) {
       }
     }
   };
-</script>
-<dom-module id="concerto-ticker" assetpath="contents/">
+</script><dom-module id="concerto-ticker" assetpath="contents/">
   <style>
     :host { 
       position: absolute;
@@ -8863,6 +8837,10 @@ if (!window.Promise) {
                   Polymer.NeonAnimationRunnerBehavior],
 
       properties: {
+        cacheKey: {
+          type: String,
+          observer: 'cacheKeyChanged'
+        },
         screenId: Number,
         fieldId: Number,
         fieldName: String,
@@ -8914,6 +8892,12 @@ if (!window.Promise) {
         this.loadNextContent();
       },
 
+      cacheKeyChanged: function (newValue, oldValue) {
+        if (oldValue !== undefined && oldValue !== null && newValue !== oldValue) {
+          this.fire('fieldCacheKeyChanged', { newValue: newValue, oldValue: oldValue });
+        }
+      },
+
       configTransition: function() {
         // Customize entry transition
         if (this.optConfig['entry_transition']) {
@@ -8951,6 +8935,8 @@ if (!window.Promise) {
        * an immediate update of the field.
        */
       handleContents: function(event, response) {
+        var key = response.xhr.getResponseHeader('X-Concerto-Frontend-Setup-Key');
+        this.cacheKey = key;
         Array.prototype.push.apply(this.contentQueue, response.response);
         if(!this.currentContent && this.contentQueue.length >= 1) {
           // We are currently not showing content and some is now in the queue.
@@ -9158,14 +9144,12 @@ if (!window.Promise) {
     
     <iron-ajax id="initScreenData" handle-as="json" on-response="handleScreenData">
     </iron-ajax>
-    <iron-ajax id="updateScreenData" handle-as="json" on-response="setupChanged">
-    </iron-ajax>
     
     <template is="dom-if" if="{{template.id}}">
       <div id="{{templateId(template.id)}}" class="template" style$="{{backgroundImage(template.path)}}">
         <template is="dom-repeat" items="{{template.positions}}" as="position">
           <div class="position" id="{{positionId(position.id)}}" style$="{{computeFieldPosition(position)}}">
-            <concerto-field screen-id="{{screenId}}" field-id="{{position.field.id}}" field-name="{{position.field.name}}" base-url="{{baseUrl}}" timezone="{{timezone}}" content-style="{{position.style}}" opt-config="{{position.field.config}}">
+            <concerto-field screen-id="{{screenId}}" field-id="{{position.field.id}}" field-name="{{position.field.name}}" base-url="{{baseUrl}}" timezone="{{timezone}}" content-style="{{position.style}}" opt-config="{{position.field.config}}" cache-key="{{cacheKey}}">
             </concerto-field>
           </div>
         </template>
@@ -9180,6 +9164,10 @@ if (!window.Promise) {
       behaviors: [ConcertoBehaviors.Utils],
 
       properties: {
+        cacheKey: {
+          type: String,
+          observer: 'cacheKeyChanged'
+        },
         screenId: Number,
         preview: String,
         baseUrl: {
@@ -9193,16 +9181,18 @@ if (!window.Promise) {
       },
 
       ready: function() {
-        /* get intial screen data and check for changes periodically */
+        /* get intial screen data */
         var setup = this.baseUrl + "/frontend/" + this.screenId + "/setup.json";
         this.$.initScreenData.url = setup;
-        this.$.updateScreenData.url = setup;
-        this.updateScreenData(this.$.initScreenData);
-        setInterval(this.updateScreenData, 8000, this.$.updateScreenData);
+        this.$.initScreenData.generateRequest();
         /* show cursor if screen is in preview mode; hide otherwise */
         if (this.preview == "true") {
           this.style.cursor = "auto";
         }
+
+        this.addEventListener('fieldCacheKeyChanged', function (e, detail) { 
+          this.cacheKeyChanged(e.detail.newValue, e.detail.oldValue);
+        });
       },
 
       templateId: function(id) {
@@ -9226,33 +9216,25 @@ if (!window.Promise) {
                "height: " + (position.bottom - position.top) * 100 + "%;";
       },
 
-      updateScreenData: function(ajax) {
-        ajax.generateRequest();
-      },
-
       handleScreenData: function(event, response) {
         /* set screen setup properties */
         var data = response.response;
         this.name = data.name;
         this.template = data.template;
         this.timezone = data.time_zone;
+
+        var key = response.xhr.getResponseHeader('etag');
+        if (key != null) {
+          key = key.replace(/"/g, '');
+          this.cacheKey = key;
+        }
       },
 
-      setupChanged: function(event, response) {
-        /* reload screen if changes are found in screen setup */
-        var template = this.template;
-        var response = response.response;
-
-        /* Check for changes to screen's effective template */
-        if (template.name != response.template.name) {
+      cacheKeyChanged: function(newValue, oldValue) {
+        if (oldValue !== undefined && oldValue !== null && oldValue !== newValue)
+        {
+          console.log("cacheKeyChanged reloading screen");
           location.reload();
-        }
-
-        /* Check for any changes to positions */
-        for (var position in this.template.positions) {
-          if (!(position in response.template.positions)) {
-            location.reload();
-          }
         }
       }
     });
