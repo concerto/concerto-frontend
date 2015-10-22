@@ -8878,6 +8878,10 @@ if (!window.Promise) {
               },
             }
           }
+        },
+        lastUpdated: {
+          type: Number,
+          value: 0
         }
       },
 
@@ -8936,7 +8940,9 @@ if (!window.Promise) {
        */
       handleContents: function(event, response) {
         var key = response.xhr.getResponseHeader('X-Concerto-Frontend-Setup-Key');
-        this.cacheKey = key;
+        if (key) {
+          this.cacheKey = key;
+        }
         Array.prototype.push.apply(this.contentQueue, response.response);
         if(!this.currentContent && this.contentQueue.length >= 1) {
           // We are currently not showing content and some is now in the queue.
@@ -8988,6 +8994,12 @@ if (!window.Promise) {
           // There was no content in the queue, try again in a few seconds.
           console.log('No content available for field ' + this.fieldId);
           this.scheduleNextContent(10 * 1000);
+          // clearout any leftover content from what may be an empty feed
+          if (this.lastUpdated > 0 && Math.abs((this.lastUpdated - Date.now()) / 1000) > 60) {
+            console.log('Removing stale content from field ' + this.fieldId);
+            this.displayContent(null);
+            this.lastUpdated = 0;
+          }
         } else {
           if(!this.loadContent(contentData)) {
             // The contend failed to load.
@@ -8995,8 +9007,14 @@ if (!window.Promise) {
             this.contentErrorCount++;
             // Allow the field to retry 5 times quickly.
             if (this.contentErrorCount <= 5) {
-              // Move on to the next content.
-              this.loadNextContent();
+              // Move on to the next content -- instead of calling recursively, use the scheduler
+              // this.loadNextContent();
+              if (this.isDebouncerActive('updateFieldContent' + this.fieldId)) {
+                // if there is a pending call then do it now
+                this.flushDebouncer('updateFieldContent' + this.fieldId);
+              } else {
+                this.scheduleNextContent(1);
+              }
             } else {
               // Schedule a delayed retry of up to 5 minutes.
               var retryDuration = Math.min((this.contentErrorCount - 1) * 30, 600);
@@ -9072,7 +9090,8 @@ if (!window.Promise) {
        * is up.
        *
        * @function displayContent
-       * @param {Element} content ConcertoContent element to be displayed.
+       * @param {Element} content ConcertoContent element to be displayed or
+       *   null if content is to be removed.
        */
       displayContent: function(content) {
         if (this.currentContent) {
@@ -9081,22 +9100,31 @@ if (!window.Promise) {
             // remove old content
             this.handleTransitionOutComplete(e, this.currentContent);
             this.removeEventListener('neon-animation-finish', _replaceContent);
-            // Transition new content in 
-            this.$.content.appendChild(content);
-            this.playAnimation('entry');
-            content.opened = true;
+            if (content) {
+              // Transition new content in 
+              this.lastUpdated = Date.now();
+              this.$.content.appendChild(content);
+              this.playAnimation('entry');
+              content.opened = true;
+            }
             this.currentContent = content;
           });
           this.playAnimation('exit');
         } else {
-          // handle content transition on initial screen load
-          this.$.content.appendChild(content);
-          this.playAnimation('entry');
-          content.opened = true;
-          this.currentContent = content;
+          // handle content transition on initial screen load or when content was not there previously
+          if (content) {
+            this.lastUpdated = Date.now();
+            this.$.content.appendChild(content);
+            this.playAnimation('entry');
+            content.opened = true;
+            this.currentContent = content;
+          }
         }
+        
         // wait to insert new contents until old content duration expires
-        this.scheduleNextContent(content.duration * 1000);
+        if (content) {
+          this.scheduleNextContent(content.duration * 1000);
+        }
       },
 
       handleTransitionOutComplete: function(e, content) {
