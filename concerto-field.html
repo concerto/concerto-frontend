@@ -195,7 +195,18 @@
           // clearout any leftover content from what may be an empty feed
           if (this.lastUpdated > 0 && Math.abs((this.lastUpdated - Date.now()) / 1000) > 60) {
             console.log('Removing stale content from field ' + this.fieldId);
-            this.displayContent(null);
+
+            //this.displayContent(null);
+            var contentData = {
+              'duration': 10,
+              'id': 0,
+              'name': 'Empty Content - Waiting',
+              'type': 'Empty',
+              'render_details': {}
+            };
+            this.loadContent(contentData);
+
+
             this.lastUpdated = 0;
           }
         } else {

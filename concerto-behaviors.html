@@ -91,11 +91,13 @@
       var content = window[klass];
       if (!content) {
         // Do not register content types which do not have a public constructor.
+        console.warn("Content type '" + contentName + "' does not appear to have a public constructor and cannot be registered");
         return;
       }
       var proto = content.prototype;
       name = this.normalizeTypeName(name);
       this.types[name] = content;
+      console.info("Registered content type " + name);
     }
   };
 
