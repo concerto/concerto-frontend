@@ -9303,6 +9303,15 @@ if (!window.Promise) {
           key = key.replace(/"/g, '');
           this.cacheKey = key;
         }
+
+        /* load the css if any */
+        if (this.template.css_path && this.template.css_path != "") {
+          var css_link = document.createElement("link");
+          css_link.type = "text/css";
+          css_link.rel = "stylesheet";
+          css_link.href = this.resolveURL(this.template.css_path, this.baseUrl);
+          document.head.appendChild(css_link);
+        }
       },
 
       cacheKeyChanged: function(newValue, oldValue) {
