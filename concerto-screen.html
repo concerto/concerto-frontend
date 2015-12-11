@@ -118,7 +118,7 @@
         this.template = data.template;
         this.timezone = data.time_zone;
 
-        var key = response.xhr.getResponseHeader('etag');
+        var key = response.xhr.getResponseHeader('ETag');
         if (key != null) {
           key = key.replace(/"/g, '');
           this.cacheKey = key;
