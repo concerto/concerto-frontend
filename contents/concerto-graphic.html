@@ -57,7 +57,7 @@
       },
 
       _graphicSrc: function(baseUrl, path) {
-        this.$.graphic.src = baseUrl + path;
+        this.$.graphic.src = this.prefixWithBase(path, baseUrl);
       },
 
       created: function (){

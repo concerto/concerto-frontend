@@ -17,6 +17,22 @@
     },
 
     /**
+     * Prepends a base to a path if not already prefixed with it
+     *
+     * Does not care about absolute URLs.
+     */
+    prefixWithBase: function(path, base) {
+      bl = base.length;
+      pl = path.length;
+      if (pl > bl && bl != 0 && path.substring(0, bl) == base)
+      {
+        return path;
+      }
+      return base + path;
+    },
+
+
+    /**
      * Use iterative binary search to find optimal content font size given 
      * the element's dimensions as constraints.
      */
