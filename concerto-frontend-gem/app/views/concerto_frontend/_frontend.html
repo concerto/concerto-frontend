@@ -7,5 +7,5 @@
 <% end %>
 
   <!-- from concerto-frontend -->
-  <concerto-screen screen-id="<%= params[:id] %>" preview="<%= @preview %>"></concerto-screen>
+  <concerto-screen screen-id="<%= params[:id] %>" preview="<%= @preview %>" base-url="<%= Rails.application.config.relative_url_root %>"></concerto-screen>
   <!-- end from concerto-frontend -->
