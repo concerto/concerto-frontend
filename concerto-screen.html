@@ -118,9 +118,8 @@
         this.template = data.template;
         this.timezone = data.time_zone;
 
-        var key = response.xhr.getResponseHeader('ETag');
-        if (key != null) {
-          key = key.replace(/"/g, '');
+        var key = response.xhr.getResponseHeader('X-Concerto-Frontend-Setup-Key');
+        if (key) {
           this.cacheKey = key;
         }
 
