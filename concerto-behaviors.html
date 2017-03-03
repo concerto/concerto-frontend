@@ -33,7 +33,7 @@
 
 
     /**
-     * Use iterative binary search to find optimal content font size given 
+     * Use iterative binary search to find optimal content font size given
      * the element's dimensions as constraints.
      */
     optimalFontSize: function(element, content) {
@@ -63,7 +63,7 @@
           }
         }
 
-        // Set final font size 
+        // Set final font size
         content.style.fontSize = minSize + "px";
       }
     }
@@ -82,7 +82,7 @@
       var basicName =  typeName.replace(/\W/g, '');
       return basicName.toLowerCase();
     },
-      
+
     /**
      * Initialize a new content element.
      */
@@ -181,10 +181,16 @@
             this.setAttribute(key.toLowerCase(), JSON.stringify(data[key]));
           } else {
             this.setAttribute(key.toLowerCase(), data[key]);
+            // TODO! @gabe please look at this and see why the prior line is not setting all the base properties
+            // I had to add the following line so that the contentId property
+            // would be set on the content types. The "contentId" property must
+            // be set here so we prevent reloading the same content in the
+            // loadNextContent method in ConcertoField.
+            this[key] = data[key];
           }
         }
       }.bind(this));
-      
+
       if (this.autoLoad) {
         this._loaded();
       }
