@@ -212,12 +212,16 @@
         } else {
           // If we currently have content and the new content has the same id as
           // the current content, then throw it out so we don't end up reloading
-          // the same piece of content.
+          // the same piece of content.  Only do this if the field_config repeat_content
+          // is set to 'Reload'. It's default value should be 'Suppress'.
           if (typeof this.currentContent !== 'undefined' && this.fieldName != 'Time') {
-            console.debug('checking for duplicate with ' + this.currentContent.contentId);
-            if (this.currentContent.contentId != null && contentData != null &&
-                this.currentContent.contentId == contentData.id) {
-              console.log('skipping same piece of content for field ' + this.fieldId);
+            // console.debug('checking for duplicate with ' + this.currentContent.contentId);
+            var repeat_content = this.optConfig['repeat_content'] && this.optConfig['repeat_content'] == 'Reload';
+            if (!repeat_content && this.currentContent.contentId != null && contentData != null &&
+                this.currentContent.contentId == contentData.id && contentData['type'] != 'RemoteVideo') {
+              console.log('skipping same piece of content ' + contentData.id + ' for field ' + this.fieldId);
+              // We don't do this for RemoteVideo above because because
+              // it needs to reload to replay, not just sit at the end for the whole duration.
               this.scheduleNextContent(this.currentContent.duration * 1000);
               return;
             }
