@@ -10723,7 +10723,7 @@ this.currentTarget=a,this.defaultPrevented=!1,this.eventPhase=Event.AT_TARGET,th
 
 
     /**
-     * Use iterative binary search to find optimal content font size given 
+     * Use iterative binary search to find optimal content font size given
      * the element's dimensions as constraints.
      */
     optimalFontSize: function(element, content) {
@@ -10753,7 +10753,7 @@ this.currentTarget=a,this.defaultPrevented=!1,this.eventPhase=Event.AT_TARGET,th
           }
         }
 
-        // Set final font size 
+        // Set final font size
         content.style.fontSize = minSize + "px";
       }
     }
@@ -10772,7 +10772,7 @@ this.currentTarget=a,this.defaultPrevented=!1,this.eventPhase=Event.AT_TARGET,th
       var basicName =  typeName.replace(/\W/g, '');
       return basicName.toLowerCase();
     },
-      
+
     /**
      * Initialize a new content element.
      */
@@ -10871,16 +10871,23 @@ this.currentTarget=a,this.defaultPrevented=!1,this.eventPhase=Event.AT_TARGET,th
             this.setAttribute(key.toLowerCase(), JSON.stringify(data[key]));
           } else {
             this.setAttribute(key.toLowerCase(), data[key]);
+            // TODO! @gabe please look at this and see why the prior line is not setting all the base properties
+            // I had to add the following line so that the contentId property
+            // would be set on the content types. The "contentId" property must
+            // be set here so we prevent reloading the same content in the
+            // loadNextContent method in ConcertoField.
+            this[key] = data[key];
           }
         }
       }.bind(this));
-      
+
       if (this.autoLoad) {
         this._loaded();
       }
     }
   };
-</script><dom-module id="concerto-ticker" assetpath="contents/">
+</script>
+<dom-module id="concerto-ticker" assetpath="contents/">
   <style>
     :host { 
       position: absolute;
@@ -11227,7 +11234,7 @@ this.currentTarget=a,this.defaultPrevented=!1,this.eventPhase=Event.AT_TARGET,th
         baseUrl: String,
         timezone: {
           type: String,
-          reflectToAttribute: true 
+          reflectToAttribute: true
         },
         handleContentLoadedBound: Object,
         currentContent: Object,
@@ -11392,6 +11399,23 @@ this.currentTarget=a,this.defaultPrevented=!1,this.eventPhase=Event.AT_TARGET,th
             this.lastUpdated = 0;
           }
         } else {
+          // If we currently have content and the new content has the same id as
+          // the current content, then throw it out so we don't end up reloading
+          // the same piece of content.  Only do this if the field_config repeat_content
+          // is set to 'Reload'. It's default value should be 'Suppress'.
+          if (typeof this.currentContent !== 'undefined' && this.fieldName != 'Time') {
+            // console.debug('checking for duplicate with ' + this.currentContent.contentId);
+            var repeat_content = this.optConfig['repeat_content'] && this.optConfig['repeat_content'] == 'Reload';
+            if (!repeat_content && this.currentContent.contentId != null && contentData != null &&
+                this.currentContent.contentId == contentData.id && contentData['type'] != 'RemoteVideo') {
+              console.log('skipping same piece of content ' + contentData.id + ' for field ' + this.fieldId);
+              // We don't do this for RemoteVideo above because because
+              // it needs to reload to replay, not just sit at the end for the whole duration.
+              this.scheduleNextContent(this.currentContent.duration * 1000);
+              return;
+            }
+          }
+
           if(!this.loadContent(contentData)) {
             // The contend failed to load.
             console.log('Unable to load ' + contentData.type + ' content for field ' + this.fieldId);
@@ -11456,7 +11480,7 @@ this.currentTarget=a,this.defaultPrevented=!1,this.eventPhase=Event.AT_TARGET,th
 
         // Listen for the content load event when content data is initialized
         content.addEventListener('load', this.handleContentLoadedBound);
-        // Content data is set and load event is fired 
+        // Content data is set and load event is fired
         content.baseUrl = this.baseUrl;
         content.cssText = this.contentStyle;
         content.fromJSON(simpleContentData);
@@ -11492,7 +11516,7 @@ this.currentTarget=a,this.defaultPrevented=!1,this.eventPhase=Event.AT_TARGET,th
             this.handleTransitionOutComplete(e, this.currentContent);
             this.removeEventListener('neon-animation-finish', _replaceContent);
             if (content) {
-              // Transition new content in 
+              // Transition new content in
               this.lastUpdated = Date.now();
               this.$.content.appendChild(content);
               this.playAnimation('entry');
@@ -11511,7 +11535,7 @@ this.currentTarget=a,this.defaultPrevented=!1,this.eventPhase=Event.AT_TARGET,th
             this.currentContent = content;
           }
         }
-        
+
         // wait to insert new contents until old content duration expires
         if (content) {
           this.scheduleNextContent(content.duration * 1000);
@@ -11537,7 +11561,8 @@ this.currentTarget=a,this.defaultPrevented=!1,this.eventPhase=Event.AT_TARGET,th
     });
   </script>
 
-</dom-module><dom-module id="concerto-screen" assetpath="/">
+</dom-module>
+<dom-module id="concerto-screen" assetpath="/">
 
   <style>
     :host {

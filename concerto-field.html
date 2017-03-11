@@ -18,7 +18,7 @@
   </style>
 
   <template>
-    <iron-ajax 
+    <iron-ajax
       id="contentsData"
       handle-as="json"
       on-response="handleContents"
@@ -45,7 +45,7 @@
         baseUrl: String,
         timezone: {
           type: String,
-          reflectToAttribute: true 
+          reflectToAttribute: true
         },
         handleContentLoadedBound: Object,
         currentContent: Object,
@@ -210,6 +210,23 @@
             this.lastUpdated = 0;
           }
         } else {
+          // If we currently have content and the new content has the same id as
+          // the current content, then throw it out so we don't end up reloading
+          // the same piece of content.  Only do this if the field_config repeat_content
+          // is set to 'Reload'. It's default value should be 'Suppress'.
+          if (typeof this.currentContent !== 'undefined' && this.fieldName != 'Time') {
+            // console.debug('checking for duplicate with ' + this.currentContent.contentId);
+            var repeat_content = this.optConfig['repeat_content'] && this.optConfig['repeat_content'] == 'Reload';
+            if (!repeat_content && this.currentContent.contentId != null && contentData != null &&
+                this.currentContent.contentId == contentData.id && contentData['type'] != 'RemoteVideo') {
+              console.log('skipping same piece of content ' + contentData.id + ' for field ' + this.fieldId);
+              // We don't do this for RemoteVideo above because because
+              // it needs to reload to replay, not just sit at the end for the whole duration.
+              this.scheduleNextContent(this.currentContent.duration * 1000);
+              return;
+            }
+          }
+
           if(!this.loadContent(contentData)) {
             // The contend failed to load.
             console.log('Unable to load ' + contentData.type + ' content for field ' + this.fieldId);
@@ -274,7 +291,7 @@
 
         // Listen for the content load event when content data is initialized
         content.addEventListener('load', this.handleContentLoadedBound);
-        // Content data is set and load event is fired 
+        // Content data is set and load event is fired
         content.baseUrl = this.baseUrl;
         content.cssText = this.contentStyle;
         content.fromJSON(simpleContentData);
@@ -310,7 +327,7 @@
             this.handleTransitionOutComplete(e, this.currentContent);
             this.removeEventListener('neon-animation-finish', _replaceContent);
             if (content) {
-              // Transition new content in 
+              // Transition new content in
               this.lastUpdated = Date.now();
               this.$.content.appendChild(content);
               this.playAnimation('entry');
@@ -329,7 +346,7 @@
             this.currentContent = content;
           }
         }
-        
+
         // wait to insert new contents until old content duration expires
         if (content) {
           this.scheduleNextContent(content.duration * 1000);
