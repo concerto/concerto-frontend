@@ -41,10 +41,7 @@
       var maxSize = parseInt(element.config['max_text_autosize']);
       if (element.parentNode && !disable) {
         // Font size and container constraints
-        maxSize = (typeof maxSize !== 'undefined') ? maxSize : 200;
-        if (isNaN(maxSize) || maxSize == null || maxSize < 5) {
-          maxSize = 200;
-        }
+        maxSize = (!isNaN(maxSize) && typeof maxSize !== 'undefined' && maxSize > 4) ? maxSize : 200;
         var minSize = 4;
         var maxWidth = element.parentNode.offsetWidth;
         var maxHeight = element.parentNode.offsetHeight;
