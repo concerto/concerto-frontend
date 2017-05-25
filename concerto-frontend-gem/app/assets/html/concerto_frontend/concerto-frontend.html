@@ -10728,10 +10728,10 @@ this.currentTarget=a,this.defaultPrevented=!1,this.eventPhase=Event.AT_TARGET,th
      */
     optimalFontSize: function(element, content) {
       var disable = !!parseInt(element.config['disable_text_autosize']);
-
+      var maxSize = parseInt(element.config['max_text_autosize']);
       if (element.parentNode && !disable) {
         // Font size and container constraints
-        var maxSize = 200;
+        maxSize = (!isNaN(maxSize) && typeof maxSize !== 'undefined' && maxSize > 4) ? maxSize : 200;
         var minSize = 4;
         var maxWidth = element.parentNode.offsetWidth;
         var maxHeight = element.parentNode.offsetHeight;
