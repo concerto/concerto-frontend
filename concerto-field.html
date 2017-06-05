@@ -193,7 +193,9 @@
           console.log('No content available for field ' + this.fieldId);
           this.scheduleNextContent(10 * 1000);
           // clearout any leftover content from what may be an empty feed
-          if (this.lastUpdated > 0 && Math.abs((this.lastUpdated - Date.now()) / 1000) > 60) {
+          if (this.lastUpdated > 0 && this.optConfig['screens_clear_last_content'] == true
+            && Math.abs((this.lastUpdated - Date.now()) / 1000) > 60) {
+
             console.log('Removing stale content from field ' + this.fieldId);
 
             //this.displayContent(null);
